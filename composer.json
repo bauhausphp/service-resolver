@@ -12,13 +12,6 @@
     "type": "library",
     "license": "MIT",
 
-    "scripts": {
-        "test:unit": "phpunit -c phpunit.xml --testdox --colors=always --coverage-clover ./tests/coverage.xml",
-        "tests": [
-            "@test:unit"
-        ]
-    },
-
     "autoload": {
         "psr-4": {
             "Bauhaus\\": "src/"

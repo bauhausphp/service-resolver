@@ -18,11 +18,11 @@ jobs:
       run: make setup package=service-resolver branch=$(echo ${GITHUB_REF#refs/heads/})
 
     - name: Tests
-      run: make tests package=service-resolver
+      run: make tests package=service-resolver coverage=y
 
     - name: Coverage
       uses: codecov/codecov-action@v1.0.13
       with:
-        file: ./packages/coverage.xml
+        file: ./packages/service-resolver/coverage.xml
         fail_ci_if_error: true
 
