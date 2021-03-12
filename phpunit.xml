@@ -21,9 +21,5 @@
         <include>
             <directory suffix=".php">./src</directory>
         </include>
-        <report>
-            <clover outputFile="/var/tmp/coverage/clover.xml"/>
-            <html outputDirectory="/var/tmp/coverage/html"/>
-        </report>
     </coverage>
 </phpunit>
