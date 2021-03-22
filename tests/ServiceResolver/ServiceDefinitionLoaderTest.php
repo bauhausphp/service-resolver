@@ -50,12 +50,18 @@ class ServiceDefinitionLoaderTest extends TestCase
      */
     public function throwExceptionIfFileDoesNotReturnArray(): void
     {
-        $file = __DIR__ . '/definitions-file-invalid-returning.php';
+        $invalidFile1 = __DIR__ . '/definitions-file-invalid-returning.php';
+        $invalidFile2 = __DIR__ . '/definitions-file-invalid-returning.php';
 
         $this->expectException(ServiceDefinitionLoaderException::class);
-        $this->expectExceptionMessage("Files must return array: $file");
+        $this->expectExceptionMessage("Files must return array: $invalidFile1, $invalidFile2");
 
-        $this->loader->loadFromFiles($file);
+        $this->loader->loadFromFiles(
+            $invalidFile1,
+            __DIR__ . '/definitions-file-1.php',
+            $invalidFile2,
+            __DIR__ . '/definitions-file-2.php',
+        );
     }
 
 
@@ -64,9 +70,11 @@ class ServiceDefinitionLoaderTest extends TestCase
      */
     public function throwExceptionIfFilesReturnInvalidServiceDefinition(): void
     {
+        $invalidFile = __DIR__ . '/definitions-file-invalid-definition.php';
+
         $this->expectException(ServiceDefinitionLoaderException::class);
         $this->expectExceptionMessage("Invalid service definitions: invalid-definition");
 
-        $this->loader->loadFromFiles(__DIR__ . '/definitions-file-invalid-definition.php');
+        $this->loader->loadFromFiles($invalidFile);
     }
 }

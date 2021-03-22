@@ -51,10 +51,13 @@ final class Discoverer implements Resolver
             return false;
         }
 
-        return [] !== array_filter(
-            $this->discoverableNamespaces,
-            fn (string $namespace) => str_starts_with($id, $namespace),
-        );
+        foreach ($this->discoverableNamespaces as $namespace) {
+            if (str_starts_with($id, $namespace)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function createServiceDefinition(string $id): ?ServiceDefinition
@@ -86,15 +89,15 @@ final class Discoverer implements Resolver
 
     private function cannotBeResolved(ReflectionParameter $p): bool
     {
-        return $p->isVariadic() || in_array(
-            (string) $p->getType(),
-            ['bool', 'int', 'string', 'array']
-        );
+        $scalarTypes = ['bool', 'int', 'string', 'array'];
+        $isScalarType = in_array($p->getType(), $scalarTypes);
+
+        return $p->isVariadic() || $isScalarType;
     }
 
     private function buildCallable(string $id, ReflectionParameter ...$params): callable
     {
-        $params = array_map(fn ($p) => (string) $p->getType(), $params);
+        $params = array_map(fn ($p): string => $p->getType(), $params);
 
         return function (PsrContainer $c) use ($id, $params) {
             $deps = array_map(fn (string $dep) => $c->get($dep), $params);
