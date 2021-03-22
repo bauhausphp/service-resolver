@@ -12,6 +12,6 @@ final class ServiceDefinitionNotFound extends RunTimeException implements PsrNot
 {
     public function __construct(string $id)
     {
-        parent::__construct("Service definition with id $id was not found");
+        parent::__construct("Service definition with id '$id' was not found");
     }
 }

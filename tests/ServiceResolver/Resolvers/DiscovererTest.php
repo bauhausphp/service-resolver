@@ -15,6 +15,7 @@ use DateTimeImmutable;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface as PsrContainer;
+use StdClass;
 
 class DiscovererTest extends TestCase
 {
@@ -64,17 +65,23 @@ class DiscovererTest extends TestCase
         $this->assertNull($null);
     }
 
+    public function undiscoverableClasses(): array
+    {
+        return [[DateTimeImmutable::class], [StdClass::class]];
+    }
+
     /**
      * @test
+     * @dataProvider undiscoverableClasses
      */
-    public function doNotDiscoverServiceOutOfDiscoverableNamespaces(): void
+    public function doNotDiscoverServiceOutOfDiscoverableNamespaces(string $id): void
     {
         $this->decorated
             ->method('get')
-            ->with(DateTimeImmutable::class)
+            ->with($id)
             ->willReturn(null);
 
-        $null = $this->discoverer->get(DateTimeImmutable::class);
+        $null = $this->discoverer->get($id);
 
         $this->assertNull($null);
     }

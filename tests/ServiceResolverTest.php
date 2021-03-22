@@ -67,6 +67,7 @@ class ServiceResolverTest extends TestCase
 
         $this->expectException(ServiceDefinitionNotFound::class);
         $this->expectException(PsrNotFoundException::class);
+        $this->expectExceptionMessage('Service definition with id \'some-id\' was not found');
 
         $this->resolver->get('some-id');
     }
