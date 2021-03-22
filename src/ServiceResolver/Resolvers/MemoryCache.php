@@ -14,7 +14,8 @@ final class MemoryCache implements Resolver
 
     public function __construct(
         private Resolver $decorated,
-    ) {}
+    ) {
+    }
 
     public function get(string $id): ?ServiceDefinition
     {

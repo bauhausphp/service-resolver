@@ -6,5 +6,6 @@ class DiscoverServiceB
 {
     public function __construct(
         private DiscoverServiceA $a,
-    ) {}
+    ) {
+    }
 }

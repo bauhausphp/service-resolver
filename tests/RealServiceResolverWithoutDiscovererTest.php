@@ -19,8 +19,8 @@ class RealServiceResolverWithoutDiscovererTest extends TestCase
     {
         $options = ServiceResolverOptions::create()
             ->withDefinitionFiles(
-                __DIR__.'/ServiceResolver/definitions-file-1.php',
-                __DIR__.'/ServiceResolver/definitions-file-2.php',
+                __DIR__ . '/ServiceResolver/definitions-file-1.php',
+                __DIR__ . '/ServiceResolver/definitions-file-2.php',
             );
 
         $this->resolver = ServiceResolverFactory::build($options);

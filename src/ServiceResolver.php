@@ -11,7 +11,8 @@ final class ServiceResolver implements PsrContainer
 {
     public function __construct(
         private Resolver $resolver,
-    ) {}
+    ) {
+    }
 
     /**
      * {@inheritDoc}

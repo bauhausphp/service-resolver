@@ -7,7 +7,9 @@ final class ServiceResolverOptions
     private array $definitionFiles = [];
     private array $discoverableNamespaces = [];
 
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 
     public static function create(): self
     {
