@@ -15,7 +15,8 @@ final class ServiceDefinitionContainer implements Resolver
      */
     public function __construct(
         private array $serviceDefinitions,
-    ) {}
+    ) {
+    }
 
     public function get(string $id): ?ServiceDefinition
     {

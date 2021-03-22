@@ -14,7 +14,8 @@ final class ServiceResolverFactory
 {
     private function __construct(
         private ServiceResolverOptions $options,
-    ) {}
+    ) {
+    }
 
     /**
      * @throws ServiceDefinitionLoaderException

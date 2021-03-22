@@ -17,7 +17,7 @@ class ServiceResolverFactoryTest extends TestCase
         return [
             'one file' => [
                 [
-                    __DIR__.'/ServiceResolver/definitions-file-1.php',
+                    __DIR__ . '/ServiceResolver/definitions-file-1.php',
                 ],
                 [
                     ServiceWithoutDependency::class => ServiceDefinition::build(fn () => 'who cares?'),
@@ -25,8 +25,8 @@ class ServiceResolverFactoryTest extends TestCase
             ],
             'two files' => [
                 [
-                    __DIR__.'/ServiceResolver/definitions-file-1.php',
-                    __DIR__.'/ServiceResolver/definitions-file-2.php',
+                    __DIR__ . '/ServiceResolver/definitions-file-1.php',
+                    __DIR__ . '/ServiceResolver/definitions-file-2.php',
                 ],
                 [
                     ServiceWithoutDependency::class => ServiceDefinition::build(fn () => 'who cares?'),

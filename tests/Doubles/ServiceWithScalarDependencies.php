@@ -8,5 +8,6 @@ class ServiceWithScalarDependencies
         private bool $bool,
         private int $int,
         private string $string,
-    ) {}
+    ) {
+    }
 }
