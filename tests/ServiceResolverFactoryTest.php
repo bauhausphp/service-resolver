@@ -4,6 +4,7 @@ namespace Bauhaus;
 
 use Bauhaus\Doubles\ServiceWithOneDependency;
 use Bauhaus\Doubles\ServiceWithoutDependency;
+use Bauhaus\ServiceResolver\Resolvers\CircularDependencyDetector;
 use Bauhaus\ServiceResolver\Resolvers\Discoverer;
 use Bauhaus\ServiceResolver\Resolvers\MemoryCache;
 use Bauhaus\ServiceResolver\Resolvers\ServiceDefinitionContainer;
@@ -52,7 +53,9 @@ class ServiceResolverFactoryTest extends TestCase
 
         $expected = new ServiceResolver(
             new MemoryCache(
-                new ServiceDefinitionContainer($expectedServiceDefinitions),
+                new CircularDependencyDetector(
+                    new ServiceDefinitionContainer($expectedServiceDefinitions),
+                ),
             ),
         );
         $this->assertEquals($expected, $resolver);
@@ -71,9 +74,11 @@ class ServiceResolverFactoryTest extends TestCase
 
         $expected = new ServiceResolver(
             new MemoryCache(
-                new Discoverer(
-                    new ServiceDefinitionContainer([]),
-                    'Some\\Namespace\\',
+                new CircularDependencyDetector(
+                    new Discoverer(
+                        new ServiceDefinitionContainer([]),
+                        'Some\\Namespace\\',
+                    ),
                 ),
             ),
         );

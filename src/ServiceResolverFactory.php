@@ -3,6 +3,7 @@
 namespace Bauhaus;
 
 use Bauhaus\ServiceResolver\Resolver;
+use Bauhaus\ServiceResolver\Resolvers\CircularDependencyDetector;
 use Bauhaus\ServiceResolver\Resolvers\Discoverer;
 use Bauhaus\ServiceResolver\Resolvers\MemoryCache;
 use Bauhaus\ServiceResolver\Resolvers\ServiceDefinitionContainer;
@@ -26,6 +27,7 @@ final class ServiceResolverFactory
 
         $resolver = $factory->createServiceDefinitionsContainer();
         $resolver = $factory->createDiscovererLayer($resolver);
+        $resolver = $factory->createCircularDependencyDetectorLayer($resolver);
         $resolver = $factory->createMemoryCacheLayer($resolver);
 
         return new ServiceResolver($resolver);
@@ -42,6 +44,11 @@ final class ServiceResolverFactory
             false => $resolver,
             true => new Discoverer($resolver, ...$this->options->discoverableNamespaces()),
         };
+    }
+
+    private function createCircularDependencyDetectorLayer(Resolver $resolver): Resolver
+    {
+        return new CircularDependencyDetector($resolver);
     }
 
     private function createMemoryCacheLayer(Resolver $resolver): Resolver
