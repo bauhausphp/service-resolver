@@ -7,5 +7,5 @@ namespace Bauhaus\ServiceResolver;
  */
 interface Resolver
 {
-    public function get(string $id): ?ServiceDefinition;
+    public function get(string $id): ?Definition;
 }

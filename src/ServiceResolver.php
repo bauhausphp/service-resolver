@@ -2,9 +2,10 @@
 
 namespace Bauhaus;
 
-use Bauhaus\ServiceResolver\ServiceDefinition;
-use Bauhaus\ServiceResolver\ServiceDefinitionNotFound;
+use Bauhaus\ServiceResolver\Definition;
+use Bauhaus\ServiceResolver\DefinitionNotFound;
 use Bauhaus\ServiceResolver\Resolver;
+use Bauhaus\ServiceResolver\Resolvers\Discoverer\DefinitionCouldNotBeDiscovered;
 use Psr\Container\ContainerInterface as PsrContainer;
 
 final class ServiceResolver implements PsrContainer
@@ -19,7 +20,11 @@ final class ServiceResolver implements PsrContainer
      */
     public function has(string $id): bool
     {
-        return null !== $this->resolve($id);
+        try {
+            return null !== $this->resolve($id);
+        } catch (DefinitionCouldNotBeDiscovered) {
+            return false;
+        }
     }
 
     /**
@@ -27,15 +32,23 @@ final class ServiceResolver implements PsrContainer
      */
     public function get(string $id)
     {
-        $serviceDefinition = $this->resolve($id);
+        try {
+            $definition = $this->resolve($id);
+        } catch (DefinitionCouldNotBeDiscovered $reason) {
+            throw new DefinitionNotFound($id, $reason);
+        }
 
-        return match ($serviceDefinition) {
-            null => throw new ServiceDefinitionNotFound($id),
-            default => $serviceDefinition->load($this),
+        // TODO Catch throwable and throw proper exception
+        // TODO Create exception with good error message
+        //   ServiceA failed because of -> ServiceB failed because of -> Exception
+
+        return match ($definition) {
+            null => throw new DefinitionNotFound($id),
+            default => $definition->evaluate($this),
         };
     }
 
-    private function resolve(string $id): ?ServiceDefinition
+    private function resolve(string $id): ?Definition
     {
         return $this->resolver->get($id);
     }

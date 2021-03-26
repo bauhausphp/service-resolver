@@ -2,15 +2,17 @@
 
 namespace Bauhaus\ServiceResolver\Resolvers;
 
+use Bauhaus\Doubles\DiscoverNamespaceB\ServiceWithScalarArrayDependency;
+use Bauhaus\Doubles\DiscoverNamespaceB\ServiceWithScalarBoolDependency;
+use Bauhaus\Doubles\DiscoverNamespaceB\ServiceWithScalarIntDependency;
+use Bauhaus\Doubles\DiscoverNamespaceB\ServiceWithScalarStringDependency;
+use Bauhaus\Doubles\DiscoverNamespaceB\ServiceWithVariadicDependency;
 use Bauhaus\Doubles\ServiceWithOneDependency;
 use Bauhaus\Doubles\ServiceWithoutDependency;
-use Bauhaus\Doubles\ServiceWithScalarArrayDependency;
-use Bauhaus\Doubles\ServiceWithScalarBoolDependency;
-use Bauhaus\Doubles\ServiceWithScalarIntDependency;
-use Bauhaus\Doubles\ServiceWithScalarStringDependency;
-use Bauhaus\Doubles\ServiceWithVariadicDependency;
 use Bauhaus\ServiceResolver\Resolver;
-use Bauhaus\ServiceResolver\ServiceDefinition;
+use Bauhaus\ServiceResolver\Definition;
+use Bauhaus\ServiceResolver\Resolvers\Discoverer\DefinitionCouldNotBeDiscovered;
+use Bauhaus\ServiceResolver\Resolvers\Discoverer\Discoverer;
 use DateTimeImmutable;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -37,44 +39,32 @@ class DiscovererTest extends TestCase
     /**
      * @test
      */
-    public function returnServiceDefinitionFromDecoratedIfItIsFound(): void
+    public function returnDefinitionFromDecoratedIfItIsFound(): void
     {
-        $serviceDefinition = ServiceDefinition::build(fn () => 'fake');
+        $definition = $this->createMock(Definition::class);
         $this->decorated
             ->method('get')
             ->with('some-id')
-            ->willReturn($serviceDefinition);
+            ->willReturn($definition);
 
         $result = $this->discoverer->get('some-id');
 
-        $this->assertSame($serviceDefinition, $result);
+        $this->assertSame($definition, $result);
+    }
+
+    public function classesOutOfDiscoverableNamespaces(): array
+    {
+        return [
+            '\\StdClass' => [StdClass::class],
+            '\\DateTimeImmutable' => [DateTimeImmutable::class],
+        ];
     }
 
     /**
      * @test
+     * @dataProvider classesOutOfDiscoverableNamespaces
      */
-    public function cannotDiscoverServiceIfIdIsNotAClassName(): void
-    {
-        $this->decorated
-            ->method('get')
-            ->with('some-id')
-            ->willReturn(null);
-
-        $null = $this->discoverer->get('some-id');
-
-        $this->assertNull($null);
-    }
-
-    public function undiscoverableClasses(): array
-    {
-        return [[DateTimeImmutable::class], [StdClass::class]];
-    }
-
-    /**
-     * @test
-     * @dataProvider undiscoverableClasses
-     */
-    public function doNotDiscoverServiceOutOfDiscoverableNamespaces(string $id): void
+    public function returnNullIfClassIsOutOfDiscoverableNamespaces(string $id): void
     {
         $this->decorated
             ->method('get')
@@ -86,7 +76,74 @@ class DiscovererTest extends TestCase
         $this->assertNull($null);
     }
 
-    public function servicesWithUnresolvableDependencies(): array
+    public function classesWithinDiscoverableNamespacesButNotAValidClassName(): array
+    {
+        return [
+            'with \\ in the beginning' => ['Bauhaus\\Doubles\\Invalid'],
+            'without \\ in the beginning' => ['\\Bauhaus\\Doubles\\Invalid'],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider classesWithinDiscoverableNamespacesButNotAValidClassName
+     */
+    public function throwExceptionIfIdIsWithinDiscoverableNamespacesButNotAValidClassName(string $id): void
+    {
+        $this->decorated
+            ->method('get')
+            ->with($id)
+            ->willReturn(null);
+
+        $this->expectException(DefinitionCouldNotBeDiscovered::class);
+        $this->expectExceptionMessage(
+            'Cannot discover definition if: id is not a valid class name'
+        );
+
+        $this->discoverer->get($id);
+    }
+
+    /**
+     * @test
+     */
+    public function discoverDefinitionOfServiceWithoutDependencies(): void
+    {
+        $this->decorated
+            ->method('get')
+            ->with(ServiceWithoutDependency::class)
+            ->willReturn(null);
+
+        $definition = $this->discoverer->get(ServiceWithoutDependency::class);
+
+        $this->assertEquals(
+            new ServiceWithoutDependency(),
+            $definition->evaluate($this->psrContainer)
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function discoverDefinitionOfServiceWithDependencies(): void
+    {
+        $this->decorated
+            ->method('get')
+            ->with(ServiceWithOneDependency::class)
+            ->willReturn(null);
+        $this->psrContainer
+            ->method('get')
+            ->with(ServiceWithoutDependency::class)
+            ->willReturn(new ServiceWithoutDependency());
+
+        $definition = $this->discoverer->get(ServiceWithOneDependency::class);
+
+        $this->assertEquals(
+            new ServiceWithOneDependency(new ServiceWithoutDependency()),
+            $definition->evaluate($this->psrContainer)
+        );
+    }
+
+    public function servicesWithNonClassDependencies(): array
     {
         return [
             'bool dependency' => [ServiceWithScalarBoolDependency::class],
@@ -99,57 +156,20 @@ class DiscovererTest extends TestCase
 
     /**
      * @test
-     * @dataProvider servicesWithUnresolvableDependencies
+     * @dataProvider servicesWithNonClassDependencies
      */
-    public function cannotDiscoverServiceWithScalarDependencies(string $id): void
+    public function throwExceptionIfThereIsANonClassDependency(string $id): void
     {
         $this->decorated
             ->method('get')
             ->with($id)
             ->willReturn(null);
 
-        $null = $this->discoverer->get($id);
-
-        $this->assertNull($null);
-    }
-
-    /**
-     * @test
-     */
-    public function discoverServiceDefinitionOfServiceWithoutDependencies(): void
-    {
-        $this->decorated
-            ->method('get')
-            ->with(ServiceWithoutDependency::class)
-            ->willReturn(null);
-
-        $serviceDefinition = $this->discoverer->get(ServiceWithoutDependency::class);
-
-        $this->assertEquals(
-            new ServiceWithoutDependency(),
-            $serviceDefinition->load($this->psrContainer)
+        $this->expectException(DefinitionCouldNotBeDiscovered::class);
+        $this->expectExceptionMessage(
+            'Cannot discover definition if: any of the service dependencies is not a valid class name'
         );
-    }
 
-    /**
-     * @test
-     */
-    public function discoverServiceDefinitionOfServiceWithDependencies(): void
-    {
-        $this->decorated
-            ->method('get')
-            ->with(ServiceWithOneDependency::class)
-            ->willReturn(null);
-        $this->psrContainer
-            ->method('get')
-            ->with(ServiceWithoutDependency::class)
-            ->willReturn(new ServiceWithoutDependency());
-
-        $serviceDefinition = $this->discoverer->get(ServiceWithOneDependency::class);
-
-        $this->assertEquals(
-            new ServiceWithOneDependency(new ServiceWithoutDependency()),
-            $serviceDefinition->load($this->psrContainer)
-        );
+        $this->discoverer->get($id);
     }
 }
