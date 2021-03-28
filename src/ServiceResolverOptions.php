@@ -2,9 +2,6 @@
 
 namespace Bauhaus;
 
-use Bauhaus\ServiceResolver\Factory\ServiceResolverFactory;
-use Psr\Container\ContainerInterface as PsrContainer;
-
 final class ServiceResolverOptions
 {
     private array $definitionFiles = [];
@@ -17,11 +14,6 @@ final class ServiceResolverOptions
     public static function empty(): self
     {
         return new self();
-    }
-
-    public function build(): PsrContainer
-    {
-        return ServiceResolverFactory::build($this);
     }
 
     public function withDefinitionFiles(string ...$files): self

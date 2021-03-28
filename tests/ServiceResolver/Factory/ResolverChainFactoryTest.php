@@ -5,14 +5,14 @@ namespace Bauhaus;
 use Bauhaus\Doubles\ServiceWithOneDependency;
 use Bauhaus\Doubles\ServiceWithoutDependency;
 use Bauhaus\ServiceResolver\ActualDefinition;
-use Bauhaus\ServiceResolver\Factory\ServiceResolverFactory;
+use Bauhaus\ServiceResolver\Factory\ResolverChainFactory;
 use Bauhaus\ServiceResolver\Resolvers\CircularDependencyDetector\CircularDependencyDetector;
 use Bauhaus\ServiceResolver\Resolvers\Discoverer\Discoverer;
 use Bauhaus\ServiceResolver\Resolvers\MemoryCache\MemoryCache;
 use Bauhaus\ServiceResolver\Resolvers\DefinitionCollection;
 use PHPUnit\Framework\TestCase;
 
-class ServiceResolverFactoryTest extends TestCase
+class ResolverChainFactoryTest extends TestCase
 {
     use DoubleDefinitionTrait;
 
@@ -54,13 +54,11 @@ class ServiceResolverFactoryTest extends TestCase
         $options = ServiceResolverOptions::empty()
             ->withDefinitionFiles(...$files);
 
-        $resolver = ServiceResolverFactory::build($options);
+        $resolver = ResolverChainFactory::build($options);
 
-        $expected = new ServiceResolver(
-            new MemoryCache(
-                new CircularDependencyDetector(
-                    new DefinitionCollection($expectedServiceDefinitions),
-                ),
+        $expected = new MemoryCache(
+            new CircularDependencyDetector(
+                new DefinitionCollection($expectedServiceDefinitions),
             ),
         );
         $this->assertEquals($expected, $resolver);
@@ -78,16 +76,14 @@ class ServiceResolverFactoryTest extends TestCase
                 '\\SomeOther',
             );
 
-        $resolver = ServiceResolverFactory::build($options);
+        $resolver = ResolverChainFactory::build($options);
 
-        $expected = new ServiceResolver(
-            new MemoryCache(
-                new CircularDependencyDetector(
-                    new Discoverer(
-                        new DefinitionCollection([]),
-                        'Some\\Namespace\\',
-                        '\\SomeOther',
-                    ),
+        $expected = new MemoryCache(
+            new CircularDependencyDetector(
+                new Discoverer(
+                    new DefinitionCollection([]),
+                    'Some\\Namespace\\',
+                    '\\SomeOther',
                 ),
             ),
         );

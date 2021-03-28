@@ -2,7 +2,6 @@
 
 namespace Bauhaus\ServiceResolver\Factory;
 
-use Bauhaus\ServiceResolver;
 use Bauhaus\ServiceResolver\Resolver;
 use Bauhaus\ServiceResolver\Resolvers\CircularDependencyDetector\CircularDependencyDetector;
 use Bauhaus\ServiceResolver\Resolvers\Discoverer\Discoverer;
@@ -13,7 +12,7 @@ use Bauhaus\ServiceResolverOptions;
 /**
  * @internal
  */
-final class ServiceResolverFactory
+final class ResolverChainFactory
 {
     private function __construct(
         private ServiceResolverOptions $options,
@@ -23,7 +22,7 @@ final class ServiceResolverFactory
     /**
      * @throws DefinitionLoaderException
      */
-    public static function build(ServiceResolverOptions $options): ServiceResolver
+    public static function build(ServiceResolverOptions $options): Resolver
     {
         $factory = new self($options);
 
@@ -32,7 +31,7 @@ final class ServiceResolverFactory
         $resolver = $factory->decorateWithCircularDependencyDetector($resolver);
         $resolver = $factory->decorateWithMemoryCache($resolver);
 
-        return new ServiceResolver($resolver);
+        return $resolver;
     }
 
     private function createDefinitionCollection(): Resolver

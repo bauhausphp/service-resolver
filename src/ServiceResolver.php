@@ -5,6 +5,7 @@ namespace Bauhaus;
 use Bauhaus\ServiceResolver\Definition;
 use Bauhaus\ServiceResolver\DefinitionEvaluationError;
 use Bauhaus\ServiceResolver\DefinitionNotFound;
+use Bauhaus\ServiceResolver\Factory\ResolverChainFactory;
 use Bauhaus\ServiceResolver\Resolver;
 use Bauhaus\ServiceResolver\Resolvers\Discoverer\DefinitionCouldNotBeDiscovered;
 use Psr\Container\ContainerInterface as PsrContainer;
@@ -12,9 +13,16 @@ use Throwable;
 
 final class ServiceResolver implements PsrContainer
 {
-    public function __construct(
+    private function __construct(
         private Resolver $resolver,
     ) {
+    }
+
+    public static function build(ServiceResolverOptions $options): self
+    {
+        $resolverChain = ResolverChainFactory::build($options);
+
+        return new self($resolverChain);
     }
 
     /**

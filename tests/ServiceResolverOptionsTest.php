@@ -2,21 +2,10 @@
 
 namespace Bauhaus;
 
-use Bauhaus\ServiceResolver\Resolver;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class ServiceResolverOptionsTest extends TestCase
 {
-    private ServiceResolver $resolver;
-    private Resolver|MockObject $resolverChain;
-
-    protected function setUp(): void
-    {
-        $this->resolverChain = $this->createMock(Resolver::class);
-        $this->resolver = new ServiceResolver($this->resolverChain);
-    }
-
     /**
      * @test
      */

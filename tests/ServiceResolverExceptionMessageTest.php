@@ -24,7 +24,7 @@ class ServiceResolverExceptionMessageTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->resolver = ServiceResolverOptions::empty()
+        $options = ServiceResolverOptions::empty()
             ->withDefinitionFiles(
                 $this->definitionPath('definitions-file-1.php'),
                 $this->definitionPath('definitions-file-2.php'),
@@ -32,8 +32,9 @@ class ServiceResolverExceptionMessageTest extends TestCase
             ->withDiscoverableNamespaces(
                 'Bauhaus\\Doubles\\DiscoverNamespaceA',
                 'Bauhaus\\Doubles\\DiscoverNamespaceB',
-            )
-            ->build();
+            );
+
+        $this->resolver = ServiceResolver::build($options);
     }
 
     public function serviceIdWithExpectedDefinitionNotFoundMessage(): array
