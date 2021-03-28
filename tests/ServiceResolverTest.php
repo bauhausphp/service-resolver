@@ -19,7 +19,6 @@ use Bauhaus\Doubles\DiscoverNamespaceB\ServiceWithVariadicDependency;
 use Bauhaus\Doubles\ServiceWithOneDependency;
 use Bauhaus\Doubles\ServiceWithoutDependency;
 use Bauhaus\Doubles\UndiscoverableService;
-use Bauhaus\ServiceResolver\DefinitionEvaluationError;
 use DateTimeImmutable;
 use PDO;
 use PHPUnit\Framework\TestCase;
@@ -187,7 +186,7 @@ class ServiceResolverTest extends TestCase
      */
     public function throwExceptionIfCircularReferenceIsDetected(string $id): void
     {
-        $this->expectException(DefinitionEvaluationError::class);
+        $this->expectException(PsrContainerException::class);
 
         $this->resolver->get($id);
     }

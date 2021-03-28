@@ -3,8 +3,8 @@
 namespace Bauhaus;
 
 use Bauhaus\ServiceResolver\Definition;
-use Bauhaus\ServiceResolver\DefinitionEvaluationError;
-use Bauhaus\ServiceResolver\DefinitionNotFound;
+use Bauhaus\ServiceResolver\ServiceEvaluationError;
+use Bauhaus\ServiceResolver\ServiceNotFound;
 use Bauhaus\ServiceResolver\Factory\ResolverChainFactory;
 use Bauhaus\ServiceResolver\Resolver;
 use Bauhaus\ServiceResolver\Resolvers\Discoverer\DefinitionCouldNotBeDiscovered;
@@ -45,21 +45,21 @@ final class ServiceResolver implements PsrContainer
         try {
             $definition = $this->resolve($id);
         } catch (DefinitionCouldNotBeDiscovered $reason) {
-            throw DefinitionNotFound::with($id, $reason);
+            throw ServiceNotFound::with($id, $reason);
         }
 
         if (null === $definition) {
-            throw DefinitionNotFound::with($id);
+            throw ServiceNotFound::with($id);
         }
 
         try {
             return $definition->evaluate($this);
-        } catch (DefinitionNotFound $ex) {
-            throw DefinitionNotFound::fromSelfPrevious($id, $ex);
-        } catch (DefinitionEvaluationError $ex) {
-            throw DefinitionEvaluationError::fromSelfPrevious($id, $ex);
+        } catch (ServiceNotFound $ex) {
+            throw ServiceNotFound::fromSelfPrevious($id, $ex);
+        } catch (ServiceEvaluationError $ex) {
+            throw ServiceEvaluationError::fromSelfPrevious($id, $ex);
         } catch (Throwable $ex) {
-            throw DefinitionEvaluationError::with($id, $ex);
+            throw ServiceEvaluationError::with($id, $ex);
         }
     }
 

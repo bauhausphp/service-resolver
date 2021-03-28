@@ -7,7 +7,7 @@ use Psr\Container\ContainerExceptionInterface as PsrContainerException;
 /**
  * @internal
  */
-final class DefinitionEvaluationError extends ServiceCouldNotBeResolved implements PsrContainerException
+final class ServiceEvaluationError extends ServiceCouldNotBeResolved implements PsrContainerException
 {
     protected function mainMessage(): string
     {
