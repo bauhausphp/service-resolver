@@ -58,11 +58,11 @@ final class DefinitionLoader
     private function buildServiceDefinitions(array $filesContent): array
     {
         $invalidDefinitions = [];
-        $serviceDefinitions = [];
+        $validDefinitions = [];
 
         foreach ($filesContent as $k => $c) {
             try {
-                $serviceDefinitions[$k] = ActualDefinition::create($c);
+                $validDefinitions[$k] = ActualDefinition::create($c);
             } catch (DefinitionCouldNotBeCreated) {
                 $invalidDefinitions[] = $k;
             }
@@ -72,6 +72,6 @@ final class DefinitionLoader
             throw DefinitionLoaderException::invalidDefinitions(...$invalidDefinitions);
         }
 
-        return $serviceDefinitions;
+        return $validDefinitions;
     }
 }
