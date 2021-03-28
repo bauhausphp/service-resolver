@@ -40,7 +40,6 @@ final class ServiceResolver implements PsrContainer
             throw DefinitionNotFound::with($id, $reason);
         }
 
-
         if (null === $definition) {
             throw DefinitionNotFound::with($id);
         }
