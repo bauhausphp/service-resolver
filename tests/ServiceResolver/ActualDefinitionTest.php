@@ -36,16 +36,17 @@ class ActualDefinitionTest extends TestCase
      */
     public function loadFromProvidedCallablePassingPsrContainer(): void
     {
+        $service = new StdClass();
         $this->psrContainer
             ->expects($this->once())
             ->method('get')
             ->with('foo')
-            ->willReturn(new StdClass());
+            ->willReturn($service);
 
         $definition = ActualDefinition::create(fn (PsrContainer $c) => $c->get('foo'));
         $result = $definition->evaluate($this->psrContainer);
 
-        $this->assertEquals(new StdClass(), $result);
+        $this->assertSame($service, $result);
     }
 
     /**
@@ -53,16 +54,17 @@ class ActualDefinitionTest extends TestCase
      */
     public function loadByCallingPsrContainerWithProvidedString(): void
     {
+        $service = new StdClass();
         $this->psrContainer
             ->expects($this->once())
             ->method('get')
             ->with('foo')
-            ->willReturn(new StdClass());
+            ->willReturn($service);
 
         $definition = ActualDefinition::create('foo');
         $result = $definition->evaluate($this->psrContainer);
 
-        $this->assertEquals(new StdClass(), $result);
+        $this->assertSame($service, $result);
     }
 
     /**

@@ -8,11 +8,13 @@ use PHPUnit\Framework\TestCase;
 class DefinitionCollectionTest extends TestCase
 {
     private DefinitionCollection $container;
+    private Definition $definition;
 
     protected function setUp(): void
     {
+        $this->definition = $this->createMock(Definition::class);
         $this->container = new DefinitionCollection([
-            'key' => $this->createMock(Definition::class),
+            'key' => $this->definition,
         ]);
     }
 
@@ -23,7 +25,7 @@ class DefinitionCollectionTest extends TestCase
     {
         $definition = $this->container->get('key');
 
-        $this->assertEquals($this->createMock(Definition::class), $definition);
+        $this->assertSame($this->definition, $definition);
     }
 
     /**
