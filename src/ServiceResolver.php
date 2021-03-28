@@ -35,18 +35,19 @@ final class ServiceResolver implements PsrContainer
         try {
             $definition = $this->resolve($id);
         } catch (DefinitionCouldNotBeDiscovered $reason) {
-            throw new DefinitionNotFound($id, $reason);
+            throw DefinitionNotFound::with($id, $reason);
         }
 
-        // TODO Catch throwable and throw proper exception
-        // TODO Create exception with good error message
-        //   ServiceA failed because of -> ServiceB failed because of -> Exception
 
         if (null === $definition) {
-            throw new DefinitionNotFound($id);
+            throw DefinitionNotFound::with($id);
         }
 
-        return $definition->evaluate($this);
+        try {
+            return $definition->evaluate($this);
+        } catch (DefinitionNotFound $ex) {
+            throw DefinitionNotFound::fromPreviousNotFound($id, $ex);
+        }
     }
 
     private function resolve(string $id): ?Definition

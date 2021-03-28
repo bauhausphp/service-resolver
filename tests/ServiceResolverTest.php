@@ -8,6 +8,9 @@ use Bauhaus\Doubles\DiscoverNamespaceA\CircularDependencyC;
 use Bauhaus\Doubles\DiscoverNamespaceA\CircularDependencyD;
 use Bauhaus\Doubles\DiscoverNamespaceA\DiscoverableA1;
 use Bauhaus\Doubles\DiscoverNamespaceA\DiscoverableA2;
+use Bauhaus\Doubles\DiscoverNamespaceA\NotFoundMessage1;
+use Bauhaus\Doubles\DiscoverNamespaceA\NotFoundMessage2;
+use Bauhaus\Doubles\DiscoverNamespaceA\NotFoundMessage3;
 use Bauhaus\Doubles\DiscoverNamespaceA\ServiceWithManyDependencies;
 use Bauhaus\Doubles\DiscoverNamespaceB\DiscoverableB;
 use Bauhaus\Doubles\DiscoverNamespaceB\ServiceWithScalarArrayDependency;
@@ -15,6 +18,8 @@ use Bauhaus\Doubles\DiscoverNamespaceB\ServiceWithScalarBoolDependency;
 use Bauhaus\Doubles\DiscoverNamespaceB\ServiceWithScalarIntDependency;
 use Bauhaus\Doubles\DiscoverNamespaceB\ServiceWithScalarStringDependency;
 use Bauhaus\Doubles\DiscoverNamespaceB\ServiceWithVariadicDependency;
+use Bauhaus\Doubles\DiscoverNamespaceB\SubdependencyOnScalar1;
+use Bauhaus\Doubles\DiscoverNamespaceB\SubdependencyOnScalar2;
 use Bauhaus\Doubles\ServiceWithOneDependency;
 use Bauhaus\Doubles\ServiceWithoutDependency;
 use Bauhaus\Doubles\UndiscoverableService;
@@ -78,7 +83,6 @@ class ServiceResolverTest extends TestCase
     public function throwExceptionIfTryToGetServiceThatCannotBeResolved(string $id): void
     {
         $this->expectException(PsrNotFoundException::class);
-        $this->expectExceptionMessage("Definition with id '$id' was not found");
 
         $this->resolver->get($id);
     }
@@ -189,5 +193,89 @@ class ServiceResolverTest extends TestCase
         $second = $this->resolver->get(ServiceWithoutDependency::class);
 
         $this->assertSame($second, $first);
+    }
+
+    public function serviceIdWithExpectedDefinitionNotFoundMessage(): array
+    {
+        $service3 = NotFoundMessage3::class;
+        $service2 = NotFoundMessage2::class;
+        $service1 = NotFoundMessage1::class;
+        $notFoundDependency = UndiscoverableService::class;
+
+        return [
+            'one level stack' => [
+                $notFoundDependency,
+                <<<MSG
+                Definition not found
+                    requested -> $notFoundDependency
+                MSG,
+            ],
+            'two levels stack' => [
+                $service1,
+                <<<MSG
+                Definition not found
+                    requested -> $service1
+                     V
+                    dependency not resolved -> $notFoundDependency
+                MSG,
+            ],
+            'three levels stack' => [
+                $service2,
+                <<<MSG
+                Definition not found
+                    requested -> $service2
+                     V
+                    dependency resolved -> $service1
+                     V
+                    dependency not resolved -> $notFoundDependency
+                MSG,
+            ],
+            'four levels stack' => [
+                $service3,
+                <<<MSG
+                Definition not found
+                    requested -> $service3
+                     V
+                    dependency resolved -> $service2
+                     V
+                    dependency resolved -> $service1
+                     V
+                    dependency not resolved -> $notFoundDependency
+                MSG,
+            ],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider serviceIdWithExpectedDefinitionNotFoundMessage
+     */
+    public function notFoundExceptionMessageHasACallTrace(string $id, string $expected): void
+    {
+        $this->expectExceptionMessage($expected);
+
+        $this->resolver->get($id);
+    }
+
+    /**
+     * @test
+     */
+    public function notFoundExceptionMessageCarriesOriginalExceptionMessage(): void
+    {
+        $calledServiceId = SubdependencyOnScalar2::class;
+        $dependencyId = SubdependencyOnScalar1::class;
+        $serviceWithErrorId = ServiceWithScalarIntDependency::class;
+
+        $this->expectExceptionMessage(<<<MSG
+            Definition not found
+                requested -> $calledServiceId
+                 V
+                dependency resolved -> $dependencyId
+                 V
+                dependency not resolved -> $serviceWithErrorId
+                 > Cannot discover definition if: any of the service dependencies is not a valid class name
+            MSG);
+
+        $this->resolver->get($calledServiceId);
     }
 }
