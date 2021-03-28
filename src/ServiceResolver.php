@@ -42,10 +42,11 @@ final class ServiceResolver implements PsrContainer
         // TODO Create exception with good error message
         //   ServiceA failed because of -> ServiceB failed because of -> Exception
 
-        return match ($definition) {
-            null => throw new DefinitionNotFound($id),
-            default => $definition->evaluate($this),
-        };
+        if (null === $definition) {
+            throw new DefinitionNotFound($id);
+        }
+
+        return $definition->evaluate($this);
     }
 
     private function resolve(string $id): ?Definition

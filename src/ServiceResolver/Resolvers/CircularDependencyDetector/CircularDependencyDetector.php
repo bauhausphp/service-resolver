@@ -19,9 +19,10 @@ final class CircularDependencyDetector implements Resolver
     {
         $result = $this->decorated->get($id);
 
-        return match ($result) {
-            default => new CircularDependencySafeDefinition($result),
-            null => null,
-        };
+        if (null === $result) {
+            return null;
+        }
+
+        return new CircularDependencySafeDefinition($result);
     }
 }

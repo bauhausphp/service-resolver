@@ -11,8 +11,12 @@ final class ActualDefinition implements Definition
 {
     private $callable;
 
-    private function __construct(callable $callable)
+    private function __construct(mixed $callable)
     {
+        if (!is_callable($callable)) {
+            throw new DefinitionCouldNotBeCreated();
+        }
+
         $this->callable = $callable;
     }
 
@@ -29,10 +33,7 @@ final class ActualDefinition implements Definition
             $from = fn () => $from;
         }
 
-        return match (is_callable($from)) {
-            true => new self($from),
-            false => throw new DefinitionCouldNotBeCreated(),
-        };
+        return new self($from);
     }
 
     public function evaluate(PsrContainer $psrContainer): object

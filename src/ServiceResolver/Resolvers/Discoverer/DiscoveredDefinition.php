@@ -45,7 +45,7 @@ final class DiscoveredDefinition implements Definition
     {
         $dependencyParams = $this->extractDependencyParams();
 
-        $this->assertParamsCanBeResolved(...$dependencyParams);
+        $this->ensureParamsCanBeResolved(...$dependencyParams);
         $this->createActualDefinition(...$dependencyParams);
     }
 
@@ -60,7 +60,7 @@ final class DiscoveredDefinition implements Definition
         return null === $constructor ? [] : $constructor->getParameters();
     }
 
-    private function assertParamsCanBeResolved(RParam ...$params): void
+    private function ensureParamsCanBeResolved(RParam ...$params): void
     {
         $filter = fn (RParam $p): bool => $p->isVariadic() || false === $this->isAClassName($p->getType());
 

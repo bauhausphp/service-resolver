@@ -31,13 +31,10 @@ final class Discoverer implements Resolver
 
     private function discover(string $id): ?Definition
     {
-        return match ($this->withinDiscoverableNamespaces($id)) {
-            false => null,
-            true => DiscoveredDefinition::fromId($id),
-        };
+        return $this->amongDiscoverableNamespaces($id) ? DiscoveredDefinition::fromId($id) : null;
     }
 
-    private function withinDiscoverableNamespaces(string $id): bool
+    private function amongDiscoverableNamespaces(string $id): bool
     {
         $id = $this->trim($id)[0];
 

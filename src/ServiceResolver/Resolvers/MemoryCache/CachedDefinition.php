@@ -19,9 +19,10 @@ final class CachedDefinition implements Definition
 
     public function evaluate(PsrContainer $psrContainer): object
     {
-        return match ($this->cache) {
-            null => $this->cache = $this->decorated->evaluate($psrContainer),
-            default => $this->cache,
-        };
+        if (null === $this->cache) {
+            $this->cache = $this->decorated->evaluate($psrContainer);
+        }
+
+        return $this->cache;
     }
 }
