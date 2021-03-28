@@ -8,7 +8,7 @@ use Bauhaus\Doubles\DiscoverNamespaceA\CircularDependencyC;
 use Bauhaus\Doubles\DiscoverNamespaceA\CircularDependencyD;
 use Bauhaus\Doubles\DiscoverNamespaceA\DiscoverableA1;
 use Bauhaus\Doubles\DiscoverNamespaceA\DiscoverableA2;
-use Bauhaus\Doubles\DiscoverNamespaceA\ServiceWithManyDependency;
+use Bauhaus\Doubles\DiscoverNamespaceA\ServiceWithManyDependencies;
 use Bauhaus\Doubles\DiscoverNamespaceB\DiscoverableB;
 use Bauhaus\Doubles\DiscoverNamespaceB\ServiceWithScalarArrayDependency;
 use Bauhaus\Doubles\DiscoverNamespaceB\ServiceWithScalarBoolDependency;
@@ -93,7 +93,7 @@ class ServiceResolverTest extends TestCase
             'discoverable with two deps' => [DiscoverableB::class],
             'defined without dep' => [ServiceWithoutDependency::class],
             'defined with one dep' => [ServiceWithOneDependency::class],
-            'defined with many deps' => [ServiceWithManyDependency::class],
+            'defined with many deps' => [ServiceWithManyDependencies::class],
         ];
     }
 
