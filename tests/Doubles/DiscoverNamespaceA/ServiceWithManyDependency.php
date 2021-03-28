@@ -6,7 +6,7 @@ use Bauhaus\Doubles\DiscoverNamespaceB\DiscoverableB;
 use Bauhaus\Doubles\ServiceWithOneDependency;
 use Bauhaus\Doubles\ServiceWithoutDependency;
 
-class ServiceWithManyDependency
+class ServiceWithManyDependencies
 {
     public function __construct(
         private ServiceWithoutDependency $a,
