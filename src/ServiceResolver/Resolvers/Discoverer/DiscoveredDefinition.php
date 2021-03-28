@@ -77,7 +77,7 @@ final class DiscoveredDefinition implements Definition
         $depIds = array_map(fn (RParam $p): string => $p->getType(), $depParams);
 
         $callable = fn (PsrContainer $c): mixed
-            => new $targetClass(...array_map(fn (string $d) => $c->get($d), $depIds));
+            => new $targetClass(...array_map(fn (string $id) => $c->get($id), $depIds));
 
         $this->definition = ActualDefinition::create($callable);
     }
