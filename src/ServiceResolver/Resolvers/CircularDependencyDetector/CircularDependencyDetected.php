@@ -9,4 +9,8 @@ use RuntimeException;
  */
 final class CircularDependencyDetected extends RuntimeException
 {
+    public function __construct()
+    {
+        parent::__construct('Circular dependency detected');
+    }
 }

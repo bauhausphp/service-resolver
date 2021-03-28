@@ -11,6 +11,7 @@ use Bauhaus\Doubles\DiscoverNamespaceA\DiscoverableA2;
 use Bauhaus\Doubles\DiscoverNamespaceA\NotFoundMessage1;
 use Bauhaus\Doubles\DiscoverNamespaceA\NotFoundMessage2;
 use Bauhaus\Doubles\DiscoverNamespaceA\NotFoundMessage3;
+use Bauhaus\Doubles\DiscoverNamespaceA\ServiceThatThrowsException;
 use Bauhaus\Doubles\DiscoverNamespaceA\ServiceWithManyDependencies;
 use Bauhaus\Doubles\DiscoverNamespaceB\DiscoverableB;
 use Bauhaus\Doubles\DiscoverNamespaceB\ServiceWithScalarArrayDependency;
@@ -23,11 +24,12 @@ use Bauhaus\Doubles\DiscoverNamespaceB\SubdependencyOnScalar2;
 use Bauhaus\Doubles\ServiceWithOneDependency;
 use Bauhaus\Doubles\ServiceWithoutDependency;
 use Bauhaus\Doubles\UndiscoverableService;
-use Bauhaus\ServiceResolver\Resolvers\CircularDependencyDetector\CircularDependencyDetected;
+use Bauhaus\ServiceResolver\DefinitionEvaluationError;
 use DateTimeImmutable;
 use PDO;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\NotFoundExceptionInterface as PsrNotFoundException;
+use Psr\Container\ContainerExceptionInterface as PsrContainerException;
 use StdClass;
 
 class ServiceResolverTest extends TestCase
@@ -80,9 +82,20 @@ class ServiceResolverTest extends TestCase
      * @test
      * @dataProvider unresolvableServiceIds
      */
-    public function throwExceptionIfTryToGetServiceThatCannotBeResolved(string $id): void
+    public function throwPsrExceptionIfTryToGetServiceThatCannotBeResolved(string $id): void
     {
         $this->expectException(PsrNotFoundException::class);
+
+        $this->resolver->get($id);
+    }
+
+    /**
+     * @test
+     * @dataProvider unresolvableServiceIds
+     */
+    public function throwPsrExceptionIfExpectedErrorOccurs(string $id): void
+    {
+        $this->expectException(PsrContainerException::class);
 
         $this->resolver->get($id);
     }
@@ -179,7 +192,7 @@ class ServiceResolverTest extends TestCase
      */
     public function throwExceptionIfCircularReferenceIsDetected(string $id): void
     {
-        $this->expectException(CircularDependencyDetected::class);
+        $this->expectException(DefinitionEvaluationError::class);
 
         $this->resolver->get($id);
     }
@@ -206,14 +219,14 @@ class ServiceResolverTest extends TestCase
             'one level stack' => [
                 $notFoundDependency,
                 <<<MSG
-                Definition not found
+                Service not found
                     requested -> $notFoundDependency
                 MSG,
             ],
             'two levels stack' => [
                 $service1,
                 <<<MSG
-                Definition not found
+                Service not found
                     requested -> $service1
                      V
                     dependency not resolved -> $notFoundDependency
@@ -222,7 +235,7 @@ class ServiceResolverTest extends TestCase
             'three levels stack' => [
                 $service2,
                 <<<MSG
-                Definition not found
+                Service not found
                     requested -> $service2
                      V
                     dependency resolved -> $service1
@@ -233,7 +246,7 @@ class ServiceResolverTest extends TestCase
             'four levels stack' => [
                 $service3,
                 <<<MSG
-                Definition not found
+                Service not found
                     requested -> $service3
                      V
                     dependency resolved -> $service2
@@ -250,7 +263,7 @@ class ServiceResolverTest extends TestCase
      * @test
      * @dataProvider serviceIdWithExpectedDefinitionNotFoundMessage
      */
-    public function notFoundExceptionMessageHasACallTrace(string $id, string $expected): void
+    public function notFoundExceptionMessageHasCallTrace(string $id, string $expected): void
     {
         $this->expectExceptionMessage($expected);
 
@@ -267,7 +280,7 @@ class ServiceResolverTest extends TestCase
         $serviceWithErrorId = ServiceWithScalarIntDependency::class;
 
         $this->expectExceptionMessage(<<<MSG
-            Definition not found
+            Service not found
                 requested -> $calledServiceId
                  V
                 dependency resolved -> $dependencyId
@@ -277,5 +290,97 @@ class ServiceResolverTest extends TestCase
             MSG);
 
         $this->resolver->get($calledServiceId);
+    }
+
+    public function serviceIdWithExpectedDefinitionErrorMessage(): array
+    {
+        $d = CircularDependencyD::class;
+        $c = CircularDependencyC::class;
+        $b = CircularDependencyB::class;
+        $a = CircularDependencyA::class;
+
+        return [
+            'one level stack' => [
+                $a,
+                <<<MSG
+                Error while evaluating service
+                    requested -> $a
+                     V
+                    dependency resolved -> $b
+                     V
+                    dependency not resolved -> $a
+                     > Circular dependency detected
+                MSG,
+            ],
+            'two levels stack' => [
+                $b,
+                <<<MSG
+                Error while evaluating service
+                    requested -> $b
+                     V
+                    dependency resolved -> $a
+                     V
+                    dependency not resolved -> $b
+                     > Circular dependency detected
+                MSG,
+            ],
+            'three levels stack' => [
+                $c,
+                <<<MSG
+                Error while evaluating service
+                    requested -> $c
+                     V
+                    dependency resolved -> $b
+                     V
+                    dependency resolved -> $a
+                     V
+                    dependency not resolved -> $b
+                     > Circular dependency detected
+                MSG,
+            ],
+            'four levels stack' => [
+                $d,
+                <<<MSG
+                Error while evaluating service
+                    requested -> $d
+                     V
+                    dependency resolved -> $c
+                     V
+                    dependency resolved -> $b
+                     V
+                    dependency resolved -> $a
+                     V
+                    dependency not resolved -> $b
+                     > Circular dependency detected
+                MSG,
+            ],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider serviceIdWithExpectedDefinitionErrorMessage
+     */
+    public function errorExceptionMessageHasCallTrace(string $id, string $expected): void
+    {
+        $this->expectExceptionMessage($expected);
+
+        $this->resolver->get($id);
+    }
+
+    /**
+     * @test
+     */
+    public function unexpectedErrorMessageIsShown(): void
+    {
+        $id = ServiceThatThrowsException::class;
+
+        $this->expectExceptionMessage(<<<MSG
+            Error while evaluating service
+                requested -> $id
+                 > Error occurred
+            MSG);
+
+        $this->resolver->get(ServiceThatThrowsException::class);
     }
 }

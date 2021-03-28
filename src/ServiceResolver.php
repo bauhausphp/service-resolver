@@ -3,10 +3,12 @@
 namespace Bauhaus;
 
 use Bauhaus\ServiceResolver\Definition;
+use Bauhaus\ServiceResolver\DefinitionEvaluationError;
 use Bauhaus\ServiceResolver\DefinitionNotFound;
 use Bauhaus\ServiceResolver\Resolver;
 use Bauhaus\ServiceResolver\Resolvers\Discoverer\DefinitionCouldNotBeDiscovered;
 use Psr\Container\ContainerInterface as PsrContainer;
+use Throwable;
 
 final class ServiceResolver implements PsrContainer
 {
@@ -46,7 +48,11 @@ final class ServiceResolver implements PsrContainer
         try {
             return $definition->evaluate($this);
         } catch (DefinitionNotFound $ex) {
-            throw DefinitionNotFound::fromPreviousNotFound($id, $ex);
+            throw DefinitionNotFound::fromSelfPrevious($id, $ex);
+        } catch (DefinitionEvaluationError $ex) {
+            throw DefinitionEvaluationError::fromSelfPrevious($id, $ex);
+        } catch (Throwable $ex) {
+            throw DefinitionEvaluationError::with($id, $ex);
         }
     }
 
