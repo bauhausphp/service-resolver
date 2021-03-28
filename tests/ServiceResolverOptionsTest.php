@@ -22,7 +22,7 @@ class ServiceResolverOptionsTest extends TestCase
      */
     public function withDefinitionFilesReturnsANewInstanceWithAddedData(): void
     {
-        $initialOptions = ServiceResolverOptions::create();
+        $initialOptions = ServiceResolverOptions::empty();
 
         $newOptions = $initialOptions->withDefinitionFiles('file1.php', 'file2.php');
 
@@ -39,7 +39,7 @@ class ServiceResolverOptionsTest extends TestCase
      */
     public function withDiscoverableNamespacesReturnsANewInstanceWithAddedData(): void
     {
-        $initialOptions = ServiceResolverOptions::create();
+        $initialOptions = ServiceResolverOptions::empty();
 
         $newOptions = $initialOptions->withDiscoverableNamespaces('Foo\\Bar');
 
@@ -56,7 +56,7 @@ class ServiceResolverOptionsTest extends TestCase
      */
     public function discoverableIsEnabledAfterAddingDiscoverableNamespaces(): void
     {
-        $initialOptions = ServiceResolverOptions::create();
+        $initialOptions = ServiceResolverOptions::empty();
 
         $newOptions = $initialOptions->withDiscoverableNamespaces('Foo\\Bar');
 

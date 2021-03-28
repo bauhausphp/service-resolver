@@ -18,7 +18,6 @@ use Bauhaus\Doubles\DiscoverNamespaceB\ServiceWithVariadicDependency;
 use Bauhaus\Doubles\ServiceWithOneDependency;
 use Bauhaus\Doubles\ServiceWithoutDependency;
 use Bauhaus\Doubles\UndiscoverableService;
-use Bauhaus\ServiceResolver\Factory\ServiceResolverFactory;
 use Bauhaus\ServiceResolver\Resolvers\CircularDependencyDetector\CircularDependencyDetected;
 use DateTimeImmutable;
 use PDO;
@@ -34,7 +33,7 @@ class ServiceResolverTest extends TestCase
 
     protected function setUp(): void
     {
-        $options = ServiceResolverOptions::create()
+        $this->resolver = ServiceResolverOptions::empty()
             ->withDefinitionFiles(
                 $this->definitionPath('definitions-file-1.php'),
                 $this->definitionPath('definitions-file-2.php'),
@@ -42,9 +41,8 @@ class ServiceResolverTest extends TestCase
             ->withDiscoverableNamespaces(
                 'Bauhaus\\Doubles\\DiscoverNamespaceA',
                 'Bauhaus\\Doubles\\DiscoverNamespaceB',
-            );
-
-        $this->resolver = ServiceResolverFactory::build($options);
+            )
+            ->build();
     }
 
     public function unresolvableServiceIds(): array

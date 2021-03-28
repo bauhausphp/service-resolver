@@ -2,6 +2,8 @@
 
 namespace Bauhaus;
 
+use Bauhaus\ServiceResolver\Factory\ServiceResolverFactory;
+
 final class ServiceResolverOptions
 {
     private array $definitionFiles = [];
@@ -11,9 +13,14 @@ final class ServiceResolverOptions
     {
     }
 
-    public static function create(): self
+    public static function empty(): self
     {
         return new self();
+    }
+
+    public function build(): ServiceResolver
+    {
+        return ServiceResolverFactory::build($this);
     }
 
     public function withDefinitionFiles(string ...$files): self

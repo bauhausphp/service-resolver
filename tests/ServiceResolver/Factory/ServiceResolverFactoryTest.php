@@ -51,7 +51,7 @@ class ServiceResolverFactoryTest extends TestCase
         array $files,
         array $expectedServiceDefinitions,
     ): void {
-        $options = ServiceResolverOptions::create()
+        $options = ServiceResolverOptions::empty()
             ->withDefinitionFiles(...$files);
 
         $resolver = ServiceResolverFactory::build($options);
@@ -72,7 +72,7 @@ class ServiceResolverFactoryTest extends TestCase
      */
     public function buildResolverWithDiscovererIfNamespaceWasProvided(): void
     {
-        $options = ServiceResolverOptions::create()
+        $options = ServiceResolverOptions::empty()
             ->withDiscoverableNamespaces(
                 'Some\\Namespace\\',
                 '\\SomeOther',
