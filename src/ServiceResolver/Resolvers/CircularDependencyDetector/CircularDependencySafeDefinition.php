@@ -22,13 +22,13 @@ final class CircularDependencySafeDefinition implements Definition
      */
     public function evaluate(PsrContainer $psrContainer): object
     {
-        $this->detectCircularReference();
+        $this->throwExceptionIfCircularDependencyDetected();
         $this->markAsAlreadyCalled();
 
         return $this->decorated->evaluate($psrContainer);
     }
 
-    private function detectCircularReference(): void
+    private function throwExceptionIfCircularDependencyDetected(): void
     {
         if ($this->alreadyCalled) {
             throw new CircularDependencyDetected();
