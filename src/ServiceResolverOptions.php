@@ -3,6 +3,7 @@
 namespace Bauhaus;
 
 use Bauhaus\ServiceResolver\Factory\ServiceResolverFactory;
+use Psr\Container\ContainerInterface as PsrContainer;
 
 final class ServiceResolverOptions
 {
@@ -18,7 +19,7 @@ final class ServiceResolverOptions
         return new self();
     }
 
-    public function build(): ServiceResolver
+    public function build(): PsrContainer
     {
         return ServiceResolverFactory::build($this);
     }

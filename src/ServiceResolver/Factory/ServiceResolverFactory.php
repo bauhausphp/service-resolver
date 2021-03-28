@@ -8,7 +8,6 @@ use Bauhaus\ServiceResolver\Resolvers\CircularDependencyDetector\CircularDepende
 use Bauhaus\ServiceResolver\Resolvers\Discoverer\Discoverer;
 use Bauhaus\ServiceResolver\Resolvers\MemoryCache\MemoryCache;
 use Bauhaus\ServiceResolver\Resolvers\DefinitionCollection;
-use Bauhaus\ServiceResolver\Definition;
 use Bauhaus\ServiceResolverOptions;
 
 /**
@@ -28,7 +27,7 @@ final class ServiceResolverFactory
     {
         $factory = new self($options);
 
-        $resolver = $factory->createServiceDefinitionsContainer();
+        $resolver = $factory->createDefinitionCollection();
         $resolver = $factory->decorateWithDiscoverer($resolver);
         $resolver = $factory->decorateWithCircularDependencyDetector($resolver);
         $resolver = $factory->decorateWithMemoryCache($resolver);
@@ -36,9 +35,11 @@ final class ServiceResolverFactory
         return new ServiceResolver($resolver);
     }
 
-    private function createServiceDefinitionsContainer(): Resolver
+    private function createDefinitionCollection(): Resolver
     {
-        return new DefinitionCollection($this->loadServiceDefinitions());
+        $loader = new DefinitionLoader(...$this->options->definitionFiles());
+
+        return new DefinitionCollection($loader->createDefinitions());
     }
 
     private function decorateWithDiscoverer(Resolver $resolver): Resolver
@@ -57,14 +58,5 @@ final class ServiceResolverFactory
     private function decorateWithMemoryCache(Resolver $resolver): Resolver
     {
         return new MemoryCache($resolver);
-    }
-
-    /**
-     * @return Definition[]
-     */
-    private function loadServiceDefinitions(): array
-    {
-        $loader = new DefinitionLoader();
-        return $loader->loadFromFiles(...$this->options->definitionFiles());
     }
 }

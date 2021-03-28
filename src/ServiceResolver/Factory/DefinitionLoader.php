@@ -11,67 +11,74 @@ use Bauhaus\ServiceResolver\DefinitionCouldNotBeCreated;
  */
 final class DefinitionLoader
 {
+    /** @var string[] */
+    private array $files;
+
+    /**
+     * @throws DefinitionLoaderException
+     */
+    public function __construct(string ...$files)
+    {
+        $this->files = $files;
+
+        $this->assertFilesExist();
+    }
+
     /**
      * @throws DefinitionLoaderException
      * @return Definition[]
      */
-    public function loadFromFiles(string ...$files): array
+    public function createDefinitions(): array
     {
-        $this->assertFilesExist(...$files);
-        $filesContent = $this->loadFiles(...$files);
+        $filesContent = $this->loadFiles();
 
-        return $this->buildServiceDefinitions($filesContent);
+        $definitions = [];
+        $problematicIds = [];
+
+        foreach ($filesContent as $id => $definition) {
+            try {
+                $definitions[$id] = ActualDefinition::create($definition);
+            } catch (DefinitionCouldNotBeCreated) {
+                $problematicIds[] = $id;
+            }
+        }
+
+        if ([] !== $problematicIds) {
+            throw DefinitionLoaderException::invalidDefinitions(...$problematicIds);
+        }
+
+        return $definitions;
     }
 
-    private function assertFilesExist(string ...$files): void
+    private function assertFilesExist(): void
     {
-        $notFoundFiles = array_filter($files, fn ($f) => !file_exists($f));
+        $notFoundFiles = array_filter($this->files, fn ($f) => !file_exists($f));
 
         if ([] !== $notFoundFiles) {
             throw DefinitionLoaderException::filesNotFound(...$notFoundFiles);
         }
     }
 
-    private function loadFiles(string ...$files): array
+    private function loadFiles(): array
     {
+        $allContent = [];
         $invalidFiles = [];
-        $allFilesContent = [];
 
-        foreach ($files as $f) {
-            $fileContent = require $f;
+        foreach ($this->files as $f) {
+            $content = require $f;
 
-            if (false === is_array($fileContent)) {
+            if (false === is_array($content)) {
                 $invalidFiles[] = $f;
                 continue;
             }
 
-            $allFilesContent = array_merge($allFilesContent, $fileContent);
+            $allContent = array_merge($allContent, $content);
         }
 
         if ([] !== $invalidFiles) {
             throw DefinitionLoaderException::filesDoNotReturnArray(...$invalidFiles);
         }
 
-        return $allFilesContent;
-    }
-
-    private function buildServiceDefinitions(array $filesContent): array
-    {
-        $invalidDefinitions = [];
-        $validDefinitions = [];
-
-        foreach ($filesContent as $k => $c) {
-            try {
-                $validDefinitions[$k] = ActualDefinition::create($c);
-            } catch (DefinitionCouldNotBeCreated) {
-                $invalidDefinitions[] = $k;
-            }
-        }
-
-        if ([] !== $invalidDefinitions) {
-            throw DefinitionLoaderException::invalidDefinitions(...$invalidDefinitions);
-        }
-
-        return $validDefinitions;
+        return $allContent;
     }
 }

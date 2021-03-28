@@ -12,13 +12,6 @@ class DefinitionLoaderTest extends TestCase
 {
     use DoubleDefinitionTrait;
 
-    private DefinitionLoader $loader;
-
-    protected function setUp(): void
-    {
-        $this->loader = new DefinitionLoader();
-    }
-
     /**
      * @test
      */
@@ -31,10 +24,11 @@ class DefinitionLoaderTest extends TestCase
             'without-callback' => ActualDefinition::create(fn () => 'who cares?'),
         ];
 
-        $serviceDefinitions = $this->loader->loadFromFiles(
+        $loader = new DefinitionLoader(
             $this->definitionPath('definitions-file-1.php'),
             $this->definitionPath('definitions-file-2.php'),
         );
+        $serviceDefinitions = $loader->createDefinitions();
 
         $this->assertEquals($expected, $serviceDefinitions);
     }
@@ -47,7 +41,7 @@ class DefinitionLoaderTest extends TestCase
         $this->expectException(DefinitionLoaderException::class);
         $this->expectExceptionMessage('Files not found: unexistent-1, unexistent-2');
 
-        $this->loader->loadFromFiles('unexistent-1', 'unexistent-2');
+        new DefinitionLoader('unexistent-1', 'unexistent-2');
     }
 
     /**
@@ -63,7 +57,8 @@ class DefinitionLoaderTest extends TestCase
         $this->expectException(DefinitionLoaderException::class);
         $this->expectExceptionMessage("Files must return array: $invalidFile1, $invalidFile2");
 
-        $this->loader->loadFromFiles($invalidFile1, $validFile1, $invalidFile2, $validFile2);
+        $loader = new DefinitionLoader($invalidFile1, $validFile1, $invalidFile2, $validFile2);
+        $loader->createDefinitions();
     }
 
     /**
@@ -76,6 +71,7 @@ class DefinitionLoaderTest extends TestCase
         $this->expectException(DefinitionLoaderException::class);
         $this->expectExceptionMessage("Invalid definitions: invalid-definition");
 
-        $this->loader->loadFromFiles($invalidFile);
+        $loader = new DefinitionLoader($invalidFile);
+        $loader->createDefinitions();
     }
 }
