@@ -20,9 +20,7 @@ final class ServiceResolver implements PsrContainer
 
     public static function build(ServiceResolverOptions $options): self
     {
-        $resolverChain = ResolverChainFactory::build($options);
-
-        return new self($resolverChain);
+        return new self(ResolverChainFactory::build($options));
     }
 
     /**
