@@ -2,16 +2,27 @@
 
 namespace Bauhaus;
 
-use Bauhaus\ServiceResolver\ServiceDefinition;
-use Bauhaus\ServiceResolver\ServiceDefinitionNotFound;
+use Bauhaus\ServiceResolver\Definition;
+use Bauhaus\ServiceResolver\ServiceEvaluationError;
+use Bauhaus\ServiceResolver\ServiceNotFound;
+use Bauhaus\ServiceResolver\Factory\ResolverChainFactory;
 use Bauhaus\ServiceResolver\Resolver;
+use Bauhaus\ServiceResolver\Resolvers\Discoverer\DefinitionCouldNotBeDiscovered;
 use Psr\Container\ContainerInterface as PsrContainer;
+use Throwable;
 
 final class ServiceResolver implements PsrContainer
 {
-    public function __construct(
+    private function __construct(
         private Resolver $resolver,
     ) {
+    }
+
+    public static function build(ServiceResolverOptions $options): self
+    {
+        $resolverChain = ResolverChainFactory::build($options);
+
+        return new self($resolverChain);
     }
 
     /**
@@ -19,7 +30,11 @@ final class ServiceResolver implements PsrContainer
      */
     public function has(string $id): bool
     {
-        return null !== $this->resolve($id);
+        try {
+            return null !== $this->resolve($id);
+        } catch (DefinitionCouldNotBeDiscovered) {
+            return false;
+        }
     }
 
     /**
@@ -27,15 +42,28 @@ final class ServiceResolver implements PsrContainer
      */
     public function get(string $id)
     {
-        $serviceDefinition = $this->resolve($id);
+        try {
+            $definition = $this->resolve($id);
+        } catch (DefinitionCouldNotBeDiscovered $reason) {
+            throw ServiceNotFound::with($id, $reason);
+        }
 
-        return match ($serviceDefinition) {
-            null => throw new ServiceDefinitionNotFound($id),
-            default => $serviceDefinition->load($this),
-        };
+        if (null === $definition) {
+            throw ServiceNotFound::with($id);
+        }
+
+        try {
+            return $definition->evaluate($this);
+        } catch (ServiceNotFound $ex) {
+            throw ServiceNotFound::fromSelfPrevious($id, $ex);
+        } catch (ServiceEvaluationError $ex) {
+            throw ServiceEvaluationError::fromSelfPrevious($id, $ex);
+        } catch (Throwable $ex) {
+            throw ServiceEvaluationError::with($id, $ex);
+        }
     }
 
-    private function resolve(string $id): ?ServiceDefinition
+    private function resolve(string $id): ?Definition
     {
         return $this->resolver->get($id);
     }

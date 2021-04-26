@@ -2,7 +2,7 @@
 <ruleset name="Bauhaus Package">
     <description>PHPCS configuration for Bauhaus Packages</description>
 
-    <rule  ref="PSR12"/>
+    <rule ref="PSR12"/>
 
     <file>src/</file>
     <file>tests/</file>

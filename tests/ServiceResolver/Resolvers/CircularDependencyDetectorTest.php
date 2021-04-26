@@ -3,69 +3,52 @@
 namespace Bauhaus\ServiceResolver\Resolvers;
 
 use Bauhaus\ServiceResolver\Resolver;
-use Bauhaus\ServiceResolver\ServiceDefinition;
+use Bauhaus\ServiceResolver\Resolvers\CircularDependencyDetector\CircularDependencyDetector;
+use Bauhaus\ServiceResolver\Definition;
+use Bauhaus\ServiceResolver\Resolvers\CircularDependencyDetector\CircularDependencySafeDefinition;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class CircularDependencyDetectorTest extends TestCase
 {
-    private CircularDependencyDetector $circuparDependecyDetector;
+    private CircularDependencyDetector $detector;
     private Resolver|MockObject $decorated;
 
     protected function setUp(): void
     {
         $this->decorated = $this->createMock(Resolver::class);
-
-        $this->circuparDependecyDetector = new CircularDependencyDetector($this->decorated);
+        $this->detector = new CircularDependencyDetector($this->decorated);
     }
 
     /**
      * @test
      */
-    public function returnResultFromDecorated(): void
+    public function makeDefinitionCircularSafe(): void
     {
-        $serviceDefinition = ServiceDefinition::build(fn () => 'fake');
+        $definition = $this->createMock(Definition::class);
         $this->decorated
             ->method('get')
             ->with('some-id')
-            ->willReturn($serviceDefinition);
+            ->willReturn($definition);
 
-        $result = $this->circuparDependecyDetector->get('some-id');
+        $result = $this->detector->get('some-id');
 
-        $this->assertSame($serviceDefinition, $result);
+        $expected = new CircularDependencySafeDefinition($definition);
+        $this->assertEquals($expected, $result);
     }
 
     /**
      * @test
      */
-    public function throwExceptionIfCircularDependencyIsDetected(): void
+    public function doNotMakeDefinitionCircularSafeIfResultIsNull(): void
     {
         $this->decorated
             ->method('get')
             ->with('some-id')
-            ->willReturnCallback(fn(string $id) => $this->circuparDependecyDetector->get($id));
+            ->willReturn(null);
 
-        $this->expectException(CircularDependencyDetected::class);
-        $this->expectExceptionMessage('Circular dependency detected: some-id -> some-id');
+        $null = $this->detector->get('some-id');
 
-        $this->circuparDependecyDetector->get('some-id');
-    }
-
-    /**
-     * @test
-     */
-    public function doNotFalseDetectCircularDependencyIfSameIdIsCalledMoreThanOnceInDifferentStacks(): void
-    {
-        $serviceDefinition = ServiceDefinition::build(fn () => 'fake');
-        $this->decorated
-            ->method('get')
-            ->with('some-id')
-            ->willReturn($serviceDefinition);
-
-        $this->circuparDependecyDetector->get('some-id');
-        $this->circuparDependecyDetector->get('some-id');
-        $result = $this->circuparDependecyDetector->get('some-id');
-
-        $this->assertSame($serviceDefinition, $result);
+        $this->assertNull($null);
     }
 }

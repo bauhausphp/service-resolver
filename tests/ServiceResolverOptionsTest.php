@@ -2,27 +2,16 @@
 
 namespace Bauhaus;
 
-use Bauhaus\ServiceResolver\Resolver;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class ServiceResolverOptionsTest extends TestCase
 {
-    private ServiceResolver $resolver;
-    private Resolver|MockObject $resolverChain;
-
-    protected function setUp(): void
-    {
-        $this->resolverChain = $this->createMock(Resolver::class);
-        $this->resolver = new ServiceResolver($this->resolverChain);
-    }
-
     /**
      * @test
      */
     public function withDefinitionFilesReturnsANewInstanceWithAddedData(): void
     {
-        $initialOptions = ServiceResolverOptions::create();
+        $initialOptions = ServiceResolverOptions::empty();
 
         $newOptions = $initialOptions->withDefinitionFiles('file1.php', 'file2.php');
 
@@ -39,7 +28,7 @@ class ServiceResolverOptionsTest extends TestCase
      */
     public function withDiscoverableNamespacesReturnsANewInstanceWithAddedData(): void
     {
-        $initialOptions = ServiceResolverOptions::create();
+        $initialOptions = ServiceResolverOptions::empty();
 
         $newOptions = $initialOptions->withDiscoverableNamespaces('Foo\\Bar');
 
@@ -56,7 +45,7 @@ class ServiceResolverOptionsTest extends TestCase
      */
     public function discoverableIsEnabledAfterAddingDiscoverableNamespaces(): void
     {
-        $initialOptions = ServiceResolverOptions::create();
+        $initialOptions = ServiceResolverOptions::empty();
 
         $newOptions = $initialOptions->withDiscoverableNamespaces('Foo\\Bar');
 

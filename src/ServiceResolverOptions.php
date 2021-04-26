@@ -11,7 +11,7 @@ final class ServiceResolverOptions
     {
     }
 
-    public static function create(): self
+    public static function empty(): self
     {
         return new self();
     }
