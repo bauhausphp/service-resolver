@@ -23,6 +23,7 @@ jobs:
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
       run: |
-        printenv | grep COVERALLS_REPO_TOKEN >> .docker-run.env
+        printenv | grep COVERALLS_REPO_TOKEN > .docker-run.env
+        printenv | grep GITHUB_             >> .docker-run.env
         make coverage package=service-resolver
 
