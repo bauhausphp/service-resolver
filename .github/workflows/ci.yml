@@ -21,9 +21,8 @@ jobs:
 
     - name: Coverage
       run: |
-        printenv | grep COVERALLS_REPO_TOKEN > .docker-run.env
-        printenv | grep GITHUB_             >> .docker-run.env
-        make -C docker run package=service-resolver cmd='printenv'
+        printenv | grep COVERALLS_REPO_TOKEN > docker/run.env
+        printenv | grep GITHUB_             >> docker/run.env
         make coverage package=service-resolver
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
