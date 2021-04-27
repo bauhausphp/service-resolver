@@ -20,10 +20,11 @@ jobs:
       run: make tests package=service-resolver
 
     - name: Coverage
-      env:
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
       run: |
         printenv | grep COVERALLS_REPO_TOKEN > .docker-run.env
         printenv | grep GITHUB_             >> .docker-run.env
+        make -C docker run package=service-resolver cmd='printenv'
         make coverage package=service-resolver
+      env:
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
 
