@@ -4,32 +4,25 @@ namespace Bauhaus;
 
 final class ServiceResolverOptions
 {
-    private array $definitionFiles = [];
-    private array $discoverableNamespaces = [];
-
-    private function __construct()
-    {
+    private function __construct(
+        private array $definitionFiles = [],
+        private array $discoverableNamespaces = [],
+    ) {
     }
 
-    public static function empty(): self
+    public static function new(): self
     {
-        return new self();
+        return new self([], []);
     }
 
-    public function withDefinitionFiles(string ...$files): self
+    public function withDefinitionFiles(string ...$definitionFiles): self
     {
-        $options = $this->clone();
-        $options->definitionFiles = $files;
-
-        return $options;
+        return $this->cloneWith(definitionFiles: $definitionFiles);
     }
 
-    public function withDiscoverableNamespaces(string ...$namespaces): self
+    public function withDiscoverableNamespaces(string ...$discoverableNamespaces): self
     {
-        $options = $this->clone();
-        $options->discoverableNamespaces = $namespaces;
-
-        return $options;
+        return $this->cloneWith(discoverableNamespaces: $discoverableNamespaces);
     }
 
     /**
@@ -53,8 +46,13 @@ final class ServiceResolverOptions
         return $this->discoverableNamespaces;
     }
 
-    private function clone(): self
-    {
-        return clone $this;
+    private function cloneWith(
+        ?array $definitionFiles = null,
+        ?array $discoverableNamespaces = null,
+    ): self {
+        return new self(
+            $definitionFiles ?? $this->definitionFiles,
+            $discoverableNamespaces ?? $this->discoverableNamespaces,
+        );
     }
 }

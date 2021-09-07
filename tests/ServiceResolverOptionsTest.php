@@ -11,12 +11,11 @@ class ServiceResolverOptionsTest extends TestCase
      */
     public function withDefinitionFilesReturnsANewInstanceWithAddedData(): void
     {
-        $initialOptions = ServiceResolverOptions::empty();
+        $initialOptions = ServiceResolverOptions::new();
 
         $newOptions = $initialOptions->withDefinitionFiles('file1.php', 'file2.php');
 
         $this->assertNotSame($initialOptions, $newOptions);
-        $this->assertEmpty($initialOptions->definitionFiles());
         $this->assertEquals(
             ['file1.php', 'file2.php'],
             $newOptions->definitionFiles(),
@@ -28,12 +27,11 @@ class ServiceResolverOptionsTest extends TestCase
      */
     public function withDiscoverableNamespacesReturnsANewInstanceWithAddedData(): void
     {
-        $initialOptions = ServiceResolverOptions::empty();
+        $initialOptions = ServiceResolverOptions::new();
 
         $newOptions = $initialOptions->withDiscoverableNamespaces('Foo\\Bar');
 
         $this->assertNotSame($initialOptions, $newOptions);
-        $this->assertEmpty($initialOptions->discoverableNamespaces());
         $this->assertEquals(
             ['Foo\\Bar'],
             $newOptions->discoverableNamespaces(),
@@ -45,7 +43,7 @@ class ServiceResolverOptionsTest extends TestCase
      */
     public function discoverableIsEnabledAfterAddingDiscoverableNamespaces(): void
     {
-        $initialOptions = ServiceResolverOptions::empty();
+        $initialOptions = ServiceResolverOptions::new();
 
         $newOptions = $initialOptions->withDiscoverableNamespaces('Foo\\Bar');
 

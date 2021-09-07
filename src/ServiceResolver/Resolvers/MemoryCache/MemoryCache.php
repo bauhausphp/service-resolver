@@ -10,7 +10,6 @@ use Bauhaus\ServiceResolver\Definition;
  */
 final class MemoryCache implements Resolver
 {
-    /** @var CachedDefinition[] */
     private array $cache = [];
 
     public function __construct(
@@ -20,11 +19,18 @@ final class MemoryCache implements Resolver
 
     public function get(string $id): ?Definition
     {
-        if (false === $this->isCached($id)) {
-            $this->createCache($id);
+        $this->ensureCache($id);
+
+        return $this->cache[$id];
+    }
+
+    private function ensureCache(string $id): void
+    {
+        if ($this->isCached($id)) {
+            return;
         }
 
-        return $this->retrieveCache($id);
+        $this->createCache($id);
     }
 
     private function isCached(string $id): bool
@@ -36,14 +42,6 @@ final class MemoryCache implements Resolver
     {
         $result = $this->decorated->get($id);
 
-        $this->cache[$id] = match ($result) {
-            null => null,
-            default => new CachedDefinition($result)
-        };
-    }
-
-    private function retrieveCache(string $id): ?Definition
-    {
-        return $this->cache[$id];
+        $this->cache[$id] = $result ? new CachedDefinition($result) : null;
     }
 }
