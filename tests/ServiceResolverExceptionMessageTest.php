@@ -24,7 +24,7 @@ class ServiceResolverExceptionMessageTest extends TestCase
 
     protected function setUp(): void
     {
-        $options = ServiceResolverOptions::empty()
+        $options = ServiceResolverOptions::new()
             ->withDefinitionFiles(
                 $this->definitionPath('definitions-file-1.php'),
                 $this->definitionPath('definitions-file-2.php'),
@@ -115,7 +115,7 @@ class ServiceResolverExceptionMessageTest extends TestCase
                 dependency resolved -> $dependencyId
                  V
                 dependency not resolved -> $serviceWithErrorId
-                 > Cannot discover definition if: any of the service dependencies is not a valid class name
+                 >>> Cannot discover definition if: any of the service dependencies is not a valid class name
             MSG);
 
         $this->resolver->get($calledServiceId);
@@ -138,7 +138,7 @@ class ServiceResolverExceptionMessageTest extends TestCase
                     dependency resolved -> $b
                      V
                     dependency not resolved -> $a
-                     > Circular dependency detected
+                     >>> Circular dependency detected
                 MSG,
             ],
             'two levels stack' => [
@@ -150,7 +150,7 @@ class ServiceResolverExceptionMessageTest extends TestCase
                     dependency resolved -> $a
                      V
                     dependency not resolved -> $b
-                     > Circular dependency detected
+                     >>> Circular dependency detected
                 MSG,
             ],
             'three levels stack' => [
@@ -164,7 +164,7 @@ class ServiceResolverExceptionMessageTest extends TestCase
                     dependency resolved -> $a
                      V
                     dependency not resolved -> $b
-                     > Circular dependency detected
+                     >>> Circular dependency detected
                 MSG,
             ],
             'four levels stack' => [
@@ -180,7 +180,7 @@ class ServiceResolverExceptionMessageTest extends TestCase
                     dependency resolved -> $a
                      V
                     dependency not resolved -> $b
-                     > Circular dependency detected
+                     >>> Circular dependency detected
                 MSG,
             ],
         ];
@@ -207,7 +207,7 @@ class ServiceResolverExceptionMessageTest extends TestCase
         $this->expectExceptionMessage(<<<MSG
             Error while evaluating service
                 requested -> $id
-                 > Error occurred
+                 >>> Error occurred
             MSG);
 
         $this->resolver->get(ServiceThatThrowsException::class);
