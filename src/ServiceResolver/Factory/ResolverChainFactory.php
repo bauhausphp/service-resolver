@@ -43,10 +43,14 @@ final class ResolverChainFactory
 
     private function decorateWithDiscoverer(Resolver $resolver): Resolver
     {
-        return match ($this->options->isDiscoverableEnabled()) {
-            false => $resolver,
-            true => new Discoverer($resolver, ...$this->options->discoverableNamespaces()),
-        };
+        if (!$this->options->isDiscoverableEnabled()) {
+            return $resolver;
+        }
+
+        return new Discoverer(
+            $resolver,
+            ...$this->options->discoverableNamespaces()
+        );
     }
 
     private function decorateWithCircularDependencyDetector(Resolver $resolver): Resolver

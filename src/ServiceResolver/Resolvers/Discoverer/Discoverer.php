@@ -10,13 +10,13 @@ use Bauhaus\ServiceResolver\Definition;
  */
 final class Discoverer implements Resolver
 {
-    private Resolver $decorated;
-    private array $discoverableNamespaces;
+    private array $namespaces;
 
-    public function __construct(Resolver $decorated, string ...$discoverableNamespaces)
-    {
-        $this->decorated = $decorated;
-        $this->discoverableNamespaces = $this->trim(...$discoverableNamespaces);
+    public function __construct(
+        private Resolver $decorated,
+        string ...$namespaces,
+    ) {
+        $this->namespaces = $this->trim(...$namespaces);
     }
 
     public function get(string $id): ?Definition
@@ -31,14 +31,14 @@ final class Discoverer implements Resolver
 
     private function discover(string $id): ?Definition
     {
-        return $this->amongDiscoverableNamespaces($id) ? DiscoveredDefinition::fromId($id) : null;
+        return $this->isAmongNamespaces($id) ? DiscoveredDefinition::fromId($id) : null;
     }
 
-    private function amongDiscoverableNamespaces(string $id): bool
+    private function isAmongNamespaces(string $id): bool
     {
         $id = $this->trim($id)[0];
 
-        foreach ($this->discoverableNamespaces as $namespace) {
+        foreach ($this->namespaces as $namespace) {
             if (str_starts_with($id, $namespace)) {
                 return true;
             }
@@ -47,9 +47,6 @@ final class Discoverer implements Resolver
         return false;
     }
 
-    /**
-     * @return string[]
-     */
     private function trim(string ...$strings): array
     {
         return array_map(fn (string $s) => trim($s, '\\'), $strings);

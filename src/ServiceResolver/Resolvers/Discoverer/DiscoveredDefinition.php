@@ -13,16 +13,15 @@ use ReflectionParameter as RParam;
  */
 final class DiscoveredDefinition implements Definition
 {
-    private string $id;
     private ActualDefinition $definition;
 
-    private function __construct(string $id)
-    {
+    private function __construct(
+        private string $id,
+    ) {
         if (false === $this->isAClassName($id)) {
             throw DefinitionCouldNotBeDiscovered::idIsNotAClass();
         }
 
-        $this->id = $id;
         $this->discover();
     }
 
@@ -49,9 +48,6 @@ final class DiscoveredDefinition implements Definition
         $this->createActualDefinition(...$dependencyParams);
     }
 
-    /**
-     * @return RParam[]
-     */
     private function extractDependencyParams(): array
     {
         $class = new RClass($this->id);

@@ -10,7 +10,6 @@ use Throwable;
  */
 abstract class ServiceCouldNotBeResolved extends RunTimeException
 {
-    /** @var string[] */
     private array $requestedIdStack;
 
     private function __construct(?Throwable $originalReason, string ...$requestedIdStack)
@@ -59,7 +58,7 @@ abstract class ServiceCouldNotBeResolved extends RunTimeException
 
         return <<<TRACE
             $trace
-            $indent > {$this->notResolvedError()}
+            $indent >>> {$this->notResolvedError()}
             TRACE;
     }
 
@@ -78,7 +77,7 @@ abstract class ServiceCouldNotBeResolved extends RunTimeException
     private function notResolvedError(): string
     {
         return match ($this->getPrevious()) {
-            null => 'Not fond',
+            null => 'Not found',
             default => $this->getPrevious()->getMessage(),
         };
     }

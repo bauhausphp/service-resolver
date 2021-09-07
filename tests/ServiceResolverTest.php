@@ -20,7 +20,6 @@ use Bauhaus\Doubles\ServiceWithOneDependency;
 use Bauhaus\Doubles\ServiceWithoutDependency;
 use Bauhaus\Doubles\UndiscoverableService;
 use DateTimeImmutable;
-use PDO;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\NotFoundExceptionInterface as PsrNotFoundException;
 use Psr\Container\ContainerExceptionInterface as PsrContainerException;
@@ -34,7 +33,7 @@ class ServiceResolverTest extends TestCase
 
     protected function setUp(): void
     {
-        $options = ServiceResolverOptions::empty()
+        $options = ServiceResolverOptions::new()
             ->withDefinitionFiles(
                 $this->definitionPath('definitions-file-1.php'),
                 $this->definitionPath('definitions-file-2.php'),
@@ -47,7 +46,7 @@ class ServiceResolverTest extends TestCase
         $this->resolver = ServiceResolver::build($options);
     }
 
-    public function unresolvableServiceIds(): array
+    public function notAutoResolvableServiceIds(): array
     {
         return [
             'discoverable but with array dep' => [ServiceWithScalarArrayDependency::class],
@@ -57,16 +56,15 @@ class ServiceResolverTest extends TestCase
             'discoverable but with variadic dep' => [ServiceWithVariadicDependency::class],
             'undiscoverable and not defined #1' => [UndiscoverableService::class],
             'undiscoverable and not defined #2' => [DateTimeImmutable::class],
-            'undiscoverable and not defined #3' => [PDO::class],
             'not defined string id' => ['undefined'],
         ];
     }
 
     /**
      * @test
-     * @dataProvider unresolvableServiceIds
+     * @dataProvider notAutoResolvableServiceIds
      */
-    public function doesNotHaveServiceIfItCannotBeResolved(string $id): void
+    public function doesNotHaveServiceIfItCannotBeAutoResolved(string $id): void
     {
         $result = $this->resolver->has($id);
 
@@ -75,9 +73,9 @@ class ServiceResolverTest extends TestCase
 
     /**
      * @test
-     * @dataProvider unresolvableServiceIds
+     * @dataProvider notAutoResolvableServiceIds
      */
-    public function throwPsrExceptionIfTryToGetServiceThatCannotBeResolved(string $id): void
+    public function throwPsrExceptionIfTryToGetServiceThatCannotBeAutoResolved(string $id): void
     {
         $this->expectException(PsrNotFoundException::class);
 

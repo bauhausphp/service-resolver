@@ -11,7 +11,6 @@ use Bauhaus\ServiceResolver\DefinitionCouldNotBeCreated;
  */
 final class DefinitionLoader
 {
-    /** @var string[] */
     private array $files;
 
     /**
