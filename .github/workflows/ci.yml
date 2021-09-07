@@ -1,5 +1,4 @@
 name: CI
-
 on: push
 
 jobs:
@@ -21,8 +20,7 @@ jobs:
 
     - name: Coverage
       run: |
-        printenv | grep COVERALLS_REPO_TOKEN > ./docker/run.env
+        printenv | grep COVERALLS_REPO_TOKEN > docker/run.env
         make coverage package=service-resolver
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
-
