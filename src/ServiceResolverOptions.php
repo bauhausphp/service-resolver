@@ -5,54 +5,38 @@ namespace Bauhaus;
 final class ServiceResolverOptions
 {
     private function __construct(
-        private array $definitionFiles = [],
-        private array $discoverableNamespaces = [],
+        public readonly array $services,
+        public readonly array $definitionFiles,
+        public readonly array $discoverableNamespaces,
     ) {
     }
 
     public static function new(): self
     {
-        return new self([], []);
+        return new self([], [], []);
+    }
+
+    public function mergedWith(self $that): self
+    {
+        return new self(
+            [...$this->services, ...$that->services],
+            [...$this->definitionFiles, ...$that->definitionFiles],
+            [...$this->discoverableNamespaces, ...$that->discoverableNamespaces],
+        );
+    }
+
+    public function withServices(array $services): self
+    {
+        return new self($services, $this->definitionFiles, $this->discoverableNamespaces);
     }
 
     public function withDefinitionFiles(string ...$definitionFiles): self
     {
-        return $this->cloneWith(definitionFiles: $definitionFiles);
+        return new self($this->services, $definitionFiles, $this->discoverableNamespaces);
     }
 
     public function withDiscoverableNamespaces(string ...$discoverableNamespaces): self
     {
-        return $this->cloneWith(discoverableNamespaces: $discoverableNamespaces);
-    }
-
-    /**
-     * @return string[]
-     */
-    public function definitionFiles(): array
-    {
-        return $this->definitionFiles;
-    }
-
-    public function isDiscoverableEnabled(): bool
-    {
-        return [] !== $this->discoverableNamespaces;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function discoverableNamespaces(): array
-    {
-        return $this->discoverableNamespaces;
-    }
-
-    private function cloneWith(
-        ?array $definitionFiles = null,
-        ?array $discoverableNamespaces = null,
-    ): self {
-        return new self(
-            $definitionFiles ?? $this->definitionFiles,
-            $discoverableNamespaces ?? $this->discoverableNamespaces,
-        );
+        return new self($this->services, $this->definitionFiles, $discoverableNamespaces);
     }
 }

@@ -1,13 +1,10 @@
 <?php
 
-use Bauhaus\Doubles\ServiceWithOneDependency;
-use Bauhaus\Doubles\ServiceWithoutDependency;
-use Psr\Container\ContainerInterface as PsrContainer;
+use Bauhaus\Doubles\NotDiscover\ServiceWithoutDependencyA;
+use Bauhaus\Doubles\NotDiscover\CallableService;
 
 return [
-    ServiceWithOneDependency::class =>
-        fn (PsrContainer $c) => new ServiceWithOneDependency(
-            $c->get(ServiceWithoutDependency::class),
-        ),
-    'service-alias' => ServiceWithoutDependency::class,
+    'service-alias' => ServiceWithoutDependencyA::class,
+    'without-callback' => new StdClass(),
+    'concrete-callable-object' => new CallableService(),
 ];
