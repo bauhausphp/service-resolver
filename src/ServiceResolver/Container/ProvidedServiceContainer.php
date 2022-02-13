@@ -18,10 +18,20 @@ final class ProvidedServiceContainer implements Locator
 
     public static function build(ServiceResolverOptions $options): self
     {
-        $files = array_map(fn (string $f): DefinitionFile => new DefinitionFile($f), $options->definitionFiles);
-        $providedServices = array_reduce($files, fn (array $s, DefinitionFile $f): array => array_merge($s, $f->load()), $options->services);
+        $files = array_map(
+            fn (string $f): DefinitionFile => new DefinitionFile($f),
+            $options->definitionFiles,
+        );
+        $providedServices = array_reduce(
+            $files,
+            fn (array $s, DefinitionFile $f): array => array_merge($s, $f->load()),
+            $options->services,
+        );
 
-        return new self(array_map(fn (mixed $s): ProvidedService => ProvidedService::create($s), $providedServices));
+        return new self(array_map(
+            fn (mixed $s): ProvidedService => ProvidedService::create($s),
+            $providedServices,
+        ));
     }
 
     public function find(Identifier $id): ?ProvidedService

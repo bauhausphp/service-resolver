@@ -19,6 +19,7 @@ use Bauhaus\Doubles\DiscoverB\DiscoverableB;
 use Bauhaus\Doubles\DiscoverB\ServiceWithScalarArrayDependency;
 use Bauhaus\Doubles\DiscoverB\ServiceWithScalarBoolDependency;
 use Bauhaus\Doubles\DiscoverB\ServiceWithScalarDependencies;
+use Bauhaus\Doubles\DiscoverB\ServiceWithScalarDependency;
 use Bauhaus\Doubles\DiscoverB\ServiceWithScalarIntDependency;
 use Bauhaus\Doubles\DiscoverB\ServiceWithScalarStringDependency;
 use Bauhaus\Doubles\DiscoverB\ServiceWithVariadicDependency;
@@ -66,6 +67,7 @@ class HaveTest extends TestCase
             'in a discoverable namespace #19' => [ServiceWithVariadicDependency::class],
             'in a discoverable namespace #20' => [SubdependencyOnScalar1::class],
             'in a discoverable namespace #21' => [SubdependencyOnScalar2::class],
+            'in a discoverable namespace and provided from file' => [ServiceWithScalarDependency::class],
         ];
     }
 

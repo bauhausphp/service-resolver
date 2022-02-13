@@ -19,6 +19,7 @@ use Bauhaus\Doubles\DiscoverB\DiscoverableB;
 use Bauhaus\Doubles\DiscoverB\ServiceWithDependenciesWithoutType;
 use Bauhaus\Doubles\DiscoverB\ServiceWithScalarArrayDependency;
 use Bauhaus\Doubles\DiscoverB\ServiceWithScalarBoolDependency;
+use Bauhaus\Doubles\DiscoverB\ServiceWithScalarDependency;
 use Bauhaus\Doubles\DiscoverB\ServiceWithScalarFloatDependency;
 use Bauhaus\Doubles\DiscoverB\ServiceWithScalarIntDependency;
 use Bauhaus\Doubles\DiscoverB\ServiceWithScalarStringDependency;
@@ -40,21 +41,38 @@ class GetTest extends TestCase
     public function idsWithExpectedClasses(): array
     {
         return [
-            'callable without dependency #1' => ['callable', ServiceWithoutDependencyA::class],
-            'callable without dependency #2' => [ServiceWithoutDependencyA::class, ServiceWithoutDependencyA::class],
-            'callable with psr container as dependency' => [ServiceWithOneDependency::class, ServiceWithOneDependency::class],
-            'callable with another service as dependency' => ['callable-with-dependency', ServiceWithOneDependency::class],
-            'concrete object #1' => ['concrete-object', ServiceWithoutDependencyB::class],
-            'concrete object #2' => ['without-callback', \StdClass::class],
-            'concrete object #3' => ['without-callback', \StdClass::class],
-            'alias to callable' => ['alias-to-callable', ServiceWithoutDependencyA::class],
-            'alias to concrete object' => ['alias-to-concrete-object', ServiceWithoutDependencyB::class],
-            'alias to discoverable' => ['alias-to-discoverable', DiscoverableA1::class],
-            'alias to class name' => ['service-alias', ServiceWithoutDependencyA::class],
-            'discoverable without dependency' => [DiscoverableA1::class, DiscoverableA1::class],
-            'discoverable with one dependency' => [DiscoverableA2::class, DiscoverableA2::class],
-            'discoverable with two dependencies' => [DiscoverableB::class, DiscoverableB::class],
-            'discoverable with many dependencies' => [ServiceWithManyDependencies::class, ServiceWithManyDependencies::class],
+            'callable without dependency #1'
+                => ['callable', ServiceWithoutDependencyA::class],
+            'callable without dependency #2'
+                => [ServiceWithoutDependencyA::class, ServiceWithoutDependencyA::class],
+            'callable with psr container as dependency'
+                => [ServiceWithOneDependency::class, ServiceWithOneDependency::class],
+            'callable with another service as dependency'
+                => ['callable-with-dependency', ServiceWithOneDependency::class],
+            'concrete object #1'
+                => ['concrete-object', ServiceWithoutDependencyB::class],
+            'concrete object #2'
+                => ['without-callback', \StdClass::class],
+            'concrete object #3'
+                => ['without-callback', \StdClass::class],
+            'alias to callable'
+                => ['alias-to-callable', ServiceWithoutDependencyA::class],
+            'alias to concrete object'
+                => ['alias-to-concrete-object', ServiceWithoutDependencyB::class],
+            'alias to discoverable'
+                => ['alias-to-discoverable', DiscoverableA1::class],
+            'alias to class name'
+                => ['service-alias', ServiceWithoutDependencyA::class],
+            'discoverable without dependency'
+                => [DiscoverableA1::class, DiscoverableA1::class],
+            'discoverable with one dependency'
+                => [DiscoverableA2::class, DiscoverableA2::class],
+            'discoverable with two dependencies'
+                => [DiscoverableB::class, DiscoverableB::class],
+            'discoverable with many dependencies'
+                => [ServiceWithManyDependencies::class, ServiceWithManyDependencies::class],
+            'discoverable with scalar dependency but provided from file'
+                => [ServiceWithScalarDependency::class, ServiceWithScalarDependency::class]
         ];
     }
 
@@ -85,12 +103,18 @@ class GetTest extends TestCase
     public function idsWithoutDefinition(): array
     {
         return [
-            'non existing id' => ['non-existing-id'],
-            'out of any discoverable namespace #1' => [\StdClass::class],
-            'out of any discoverable namespace #2' => [\DateTime::class],
-            'out of any discoverable namespace #3' => [Unresolvable::class],
-            'interface among discoverable namespace' => [InterfaceInADiscoverableNamespace::class],
-            'abstract class among discoverable namespace' => [AbstractClassInADiscoverableNamespace::class],
+            'non existing id'
+                => ['non-existing-id'],
+            'out of any discoverable namespace #1'
+                => [\StdClass::class],
+            'out of any discoverable namespace #2'
+                => [\DateTime::class],
+            'out of any discoverable namespace #3'
+                => [Unresolvable::class],
+            'interface among discoverable namespace'
+                => [InterfaceInADiscoverableNamespace::class],
+            'abstract class among discoverable namespace'
+                => [AbstractClassInADiscoverableNamespace::class],
         ];
     }
 
@@ -101,6 +125,7 @@ class GetTest extends TestCase
     public function throwPsrNotFoundExceptionIfProvidedIdHasNoDefinition(string $id): void
     {
         self::expectException(PsrNotFoundException::class);
+        self::expectExceptionMessage("No definition found with id $id");
 
         $this->resolver->get($id);
     }
@@ -162,8 +187,10 @@ class GetTest extends TestCase
      * @test
      * @dataProvider idsWithCircularDependency
      */
-    public function throwPsrContainerExceptionIfCircularDependencyIsDetected(string $id, string $expectedMessage): void
-    {
+    public function throwPsrContainerExceptionIfCircularDependencyIsDetected(
+        string $id,
+        string $expectedMessage,
+    ): void {
         self::expectException(PsrContainerException::class);
         self::expectExceptionMessage($expectedMessage);
 
@@ -276,10 +303,12 @@ class GetTest extends TestCase
      * @test
      * @dataProvider idsOfDiscoverableServicesWithScalarDependency
      */
-    public function throwPsrContainerExceptionIfDiscoverableServiceHasUnresolvableDependency(string $id, string $expected): void
-    {
+    public function throwPsrContainerExceptionIfDiscoverableServiceHasUnresolvableDependency(
+        string $id,
+        string $expectedMessage
+    ): void {
         self::expectException(PsrContainerException::class);
-        self::expectExceptionMessage($expected);
+        self::expectExceptionMessage($expectedMessage);
 
         $this->resolver->get($id);
     }

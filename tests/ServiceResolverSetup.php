@@ -34,8 +34,8 @@ trait ServiceResolverSetup
                 'alias-to-non-existing-id' => 'non-existing-id',
             ])
             ->withDefinitionFiles(
-                __DIR__.'/Doubles/definitions-file-1.php',
-                __DIR__.'/Doubles/definitions-file-2.php',
+                __DIR__ . '/Doubles/definitions-file-1.php',
+                __DIR__ . '/Doubles/definitions-file-2.php',
             )
             ->withDiscoverableNamespaces(
                 'Bauhaus\\Doubles\\DiscoverA',

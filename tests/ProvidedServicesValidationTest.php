@@ -26,7 +26,7 @@ class ProvidedServicesValidationTest extends TestCase
      */
     public function throwExceptionIfDefinitionFileDoesNotReturnArray(): void
     {
-        $filePath = __DIR__.'/Doubles/definitions-file-invalid-returning.php';
+        $filePath = __DIR__ . '/Doubles/definitions-file-invalid-returning.php';
         $options = ServiceResolverOptions::new()
             ->withDefinitionFiles($filePath);
 
@@ -42,7 +42,7 @@ class ProvidedServicesValidationTest extends TestCase
     public function throwExceptionIfDefinitionFromFileIsInvalid(): void
     {
         $options = ServiceResolverOptions::new()
-            ->withDefinitionFiles(__DIR__.'/Doubles/definitions-file-invalid-definition.php');
+            ->withDefinitionFiles(__DIR__ . '/Doubles/definitions-file-invalid-definition.php');
 
         self::expectException(InvalidArgumentException::class);
         self::expectExceptionMessage("Invalid service provided");

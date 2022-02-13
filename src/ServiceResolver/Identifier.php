@@ -21,11 +21,7 @@ final class Identifier
 
     public function isClassName(): bool
     {
-        if (!class_exists((string) $this)) {
-            return false;
-        }
-
-        return !$this->reflectionClass()->isAbstract();
+        return class_exists($this) && !$this->reflectionClass()->isAbstract();
     }
 
     public function reflectionClass(): RClass

@@ -46,7 +46,7 @@ final class LoadableDependency
 
     private function isPrimitiveType(): bool
     {
-        return in_array((string) $this->rParam->getType(), self::PRIMITIVE_TYPES);
+        return in_array($this->rParam->getType(), self::PRIMITIVE_TYPES);
     }
 
     private function assertIsLoadable(): void

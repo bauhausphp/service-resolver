@@ -8,7 +8,6 @@ use Bauhaus\ServiceResolver\Locator;
 use Bauhaus\ServiceResolverOptions;
 use InvalidArgumentException;
 
-
 /**
  * @internal
  */
