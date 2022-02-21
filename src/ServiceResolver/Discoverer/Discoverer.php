@@ -5,7 +5,7 @@ namespace Bauhaus\ServiceResolver\Discoverer;
 use Bauhaus\ServiceResolver\Definition;
 use Bauhaus\ServiceResolver\Identifier;
 use Bauhaus\ServiceResolver\Locator;
-use Bauhaus\ServiceResolverOptions;
+use Bauhaus\ServiceResolverSettings;
 use InvalidArgumentException;
 
 /**
@@ -16,10 +16,10 @@ final class Discoverer implements Locator
     private readonly DiscoverableNamespaces $namespaces;
 
     public function __construct(
-        ServiceResolverOptions $options,
+        ServiceResolverSettings $settings,
         private readonly Locator $actualLocator,
     ) {
-        $this->namespaces = new DiscoverableNamespaces($options);
+        $this->namespaces = new DiscoverableNamespaces($settings);
     }
 
     public function find(Identifier $id): ?Definition

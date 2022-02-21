@@ -2,7 +2,7 @@
 
 namespace Bauhaus\ServiceResolver\Discoverer;
 
-use Bauhaus\ServiceResolverOptions;
+use Bauhaus\ServiceResolverSettings;
 
 /**
  * @internal
@@ -11,9 +11,9 @@ final class DiscoverableNamespaces
 {
     /** @var string[] */ private readonly array $namespaces;
 
-    public function __construct(ServiceResolverOptions $options)
+    public function __construct(ServiceResolverSettings $settings)
     {
-        $this->namespaces = $options->discoverableNamespaces;
+        $this->namespaces = $settings->discoverableNamespaces;
     }
 
     public function contain(string $className): bool

@@ -22,11 +22,11 @@ final class ServiceResolver implements PsrContainer
     ) {
     }
 
-    public static function build(ServiceResolverOptions $options): self
+    public static function build(ServiceResolverSettings $settings): self
     {
-        $container = ProvidedServiceContainer::build($options);
+        $container = ProvidedServiceContainer::build($settings);
         $selfDetector = new SelfPsrContainerDetector($container);
-        $discoverer = new Discoverer($options, $selfDetector);
+        $discoverer = new Discoverer($settings, $selfDetector);
         $circularDetector = new CircularDependencyDetector($discoverer);
         $memoryCache = new MemoryCache($circularDetector);
 

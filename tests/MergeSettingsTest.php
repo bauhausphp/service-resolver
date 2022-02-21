@@ -4,28 +4,28 @@ namespace Bauhaus;
 
 use PHPUnit\Framework\TestCase;
 
-class MergeOptionsTest extends TestCase
+class MergeSettingsTest extends TestCase
 {
     /**
      * @test
      */
-    public function keepValuesFromBothOptions(): void
+    public function keepValuesFromBothSettings(): void
     {
-        $options1 = ServiceResolverOptions::new()
+        $settings1 = ServiceResolverSettings::new()
             ->withDefinitionFiles('file11', 'file12')
             ->withDiscoverableNamespaces('namespace11', 'namespace12')
             ->withServices(['service1' => new \StdClass()]);
-        $options2 = ServiceResolverOptions::new()
+        $settings2 = ServiceResolverSettings::new()
             ->withDefinitionFiles('file21', 'file22')
             ->withDiscoverableNamespaces('namespace21', 'namespace22')
             ->withServices(['service2' => new \StdClass()]);
 
-        $mergedOptions = $options1->mergedWith($options2);
+        $mergedSettings = $settings1->mergedWith($settings2);
 
-        $expected = ServiceResolverOptions::new()
+        $expected = ServiceResolverSettings::new()
             ->withDefinitionFiles('file11', 'file12', 'file21', 'file22')
             ->withDiscoverableNamespaces('namespace11', 'namespace12', 'namespace21', 'namespace22')
             ->withServices(['service1' => new \StdClass(), 'service2' => new \StdClass()]);
-        self::assertEquals($expected, $mergedOptions);
+        self::assertEquals($expected, $mergedSettings);
     }
 }

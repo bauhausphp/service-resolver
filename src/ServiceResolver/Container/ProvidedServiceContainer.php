@@ -4,7 +4,7 @@ namespace Bauhaus\ServiceResolver\Container;
 
 use Bauhaus\ServiceResolver\Identifier;
 use Bauhaus\ServiceResolver\Locator;
-use Bauhaus\ServiceResolverOptions;
+use Bauhaus\ServiceResolverSettings;
 
 /**
  * @internal
@@ -16,16 +16,17 @@ final class ProvidedServiceContainer implements Locator
     ) {
     }
 
-    public static function build(ServiceResolverOptions $options): self
+    public static function build(ServiceResolverSettings $settings): self
     {
         $files = array_map(
             fn (string $f): DefinitionFile => new DefinitionFile($f),
-            $options->definitionFiles,
+            $settings->definitionFiles,
         );
+
         $providedServices = array_reduce(
             $files,
             fn (array $s, DefinitionFile $f): array => array_merge($s, $f->load()),
-            $options->services,
+            $settings->services,
         );
 
         return new self(array_map(

@@ -2,7 +2,7 @@
 
 namespace Bauhaus;
 
-final class ServiceResolverOptions
+final class ServiceResolverSettings
 {
     private function __construct(
         public readonly array $services,

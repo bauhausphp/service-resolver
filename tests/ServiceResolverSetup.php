@@ -9,22 +9,22 @@ use Bauhaus\Doubles\NotDiscover\ServiceWithoutDependencyB;
 trait ServiceResolverSetup
 {
     protected readonly ServiceResolver $resolver;
-    private readonly ServiceResolverOptions $options;
+    private readonly ServiceResolverSettings $settings;
 
     /**
      * @before
      */
     public function setUpServiceResolver(): void
     {
-        $this->resolver = ServiceResolver::build($this->options);
+        $this->resolver = ServiceResolver::build($this->settings);
     }
 
     /**
      * @before
      */
-    public function setUpOptions(): void
+    public function setUpSettings(): void
     {
-        $this->options = ServiceResolverOptions::new()
+        $this->settings = ServiceResolverSettings::new()
             ->withServices([
                 'callable' => fn () => new ServiceWithoutDependencyA(),
                 'concrete-object' => new ServiceWithoutDependencyB(),
