@@ -14,7 +14,7 @@ final class MemoryCache implements Locator
     private array $cache = [];
 
     public function __construct(
-        private Locator $actualLocator,
+        private readonly Locator $actualLocator,
     ) {
     }
 

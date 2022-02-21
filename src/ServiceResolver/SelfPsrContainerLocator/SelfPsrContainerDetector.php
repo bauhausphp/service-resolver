@@ -19,6 +19,8 @@ final class SelfPsrContainerDetector implements Locator
 
     public function find(Identifier $id): ?Definition
     {
-        return (string) $id === PsrContainer::class ? new SelfPsrContainerReturner() : $this->actualLocator->find($id);
+        $isPsrContainer = (string) $id === PsrContainer::class;
+
+        return $isPsrContainer ? new SelfPsrContainerReturner() : $this->actualLocator->find($id);
     }
 }
