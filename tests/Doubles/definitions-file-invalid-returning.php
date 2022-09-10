@@ -1,3 +1,0 @@
-<?php
-
-return 'not-array';
