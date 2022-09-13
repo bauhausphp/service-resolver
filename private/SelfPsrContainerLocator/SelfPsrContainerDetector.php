@@ -2,9 +2,9 @@
 
 namespace Bauhaus\ServiceResolver\SelfPsrContainerLocator;
 
+use Bauhaus\ServiceResolver\Definition;
 use Bauhaus\ServiceResolver\Identifier;
 use Bauhaus\ServiceResolver\Locator;
-use Bauhaus\ServiceResolver\Definition;
 use Psr\Container\ContainerInterface as PsrContainer;
 
 /**

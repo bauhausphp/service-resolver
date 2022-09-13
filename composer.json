@@ -1,6 +1,6 @@
 {
     "name": "bauhaus/service-resolver",
-    "description": "Yet another service resolver implementation",
+    "description": "Yet another PSR-11 implementation",
     "keywords": [
         "bauhaus",
         "service resolver",
@@ -13,7 +13,10 @@
     "license": "MIT",
 
     "autoload": {
-        "psr-4": { "Bauhaus\\": "./" }
+        "psr-4": {
+            "Bauhaus\\": "public/",
+            "Bauhaus\\ServiceResolver\\": "private/"
+        }
     },
 
     "require": {

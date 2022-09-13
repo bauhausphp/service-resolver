@@ -34,7 +34,7 @@ $ composer require bauhaus/service-resolver
 use Bauhaus\ServiceResolver;
 use Bauhaus\ServiceResolverSettings;
 
-$settins = ServiceResolverSettings::new()
+$settings = ServiceResolverSettings::new()
     ->withDefintionFiles(
         'path/file-1.php',
         'path/file-2.php',
