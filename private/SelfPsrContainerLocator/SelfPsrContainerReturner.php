@@ -8,7 +8,7 @@ use Psr\Container\ContainerInterface as PsrContainer;
 /**
  * @internal
  */
-final class SelfPsrContainerReturner implements Definition
+final readonly class SelfPsrContainerReturner implements Definition
 {
     public function load(PsrContainer $psrContainer): object
     {

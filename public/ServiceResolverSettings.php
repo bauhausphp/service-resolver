@@ -2,12 +2,14 @@
 
 namespace Bauhaus;
 
-final class ServiceResolverSettings
+use Bauhaus\ServiceResolver\ServiceResolver;
+
+final readonly class ServiceResolverSettings
 {
     private function __construct(
-        public readonly array $services,
-        public readonly array $definitionFiles,
-        public readonly array $discoverableNamespaces,
+        public array $services,
+        public array $definitionFiles,
+        public array $discoverableNamespaces,
     ) {
     }
 
@@ -38,5 +40,10 @@ final class ServiceResolverSettings
     public function withDiscoverableNamespaces(string ...$discoverableNamespaces): self
     {
         return new self($this->services, $this->definitionFiles, $discoverableNamespaces);
+    }
+
+    public function build(): ServiceResolver
+    {
+        return ServiceResolver::build($this);
     }
 }

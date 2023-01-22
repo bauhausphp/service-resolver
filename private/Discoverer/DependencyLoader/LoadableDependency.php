@@ -10,12 +10,12 @@ use ReflectionParameter as RParam;
 /**
  * @internal
  */
-final class LoadableDependency
+final readonly class LoadableDependency
 {
     private const PRIMITIVE_TYPES = ['bool', 'int', 'float', 'string', 'array'];
 
     public function __construct(
-        private readonly RParam $rParam
+        private RParam $rParam
     ) {
         $this->assertIsLoadable();
     }

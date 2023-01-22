@@ -10,10 +10,10 @@ use Psr\Container\ContainerInterface as PsrContainer;
 /**
  * @internal
  */
-final class SelfPsrContainerDetector implements Locator
+final readonly class SelfPsrContainerDetector implements Locator
 {
     public function __construct(
-        private readonly Locator $actualLocator,
+        private Locator $actualLocator,
     ) {
     }
 

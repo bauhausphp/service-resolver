@@ -9,10 +9,10 @@ use Bauhaus\ServiceResolver\Locator;
 /**
  * @internal
  */
-final class CircularDependencyDetector implements Locator
+final readonly class CircularDependencyDetector implements Locator
 {
     public function __construct(
-        private readonly Locator $actualLocator,
+        private Locator $actualLocator,
     ) {
     }
 

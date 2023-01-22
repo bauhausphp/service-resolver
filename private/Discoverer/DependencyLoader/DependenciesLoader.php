@@ -10,9 +10,9 @@ use ReflectionParameter as RParam;
 /**
  * @internal
  */
-final class DependenciesLoader
+final readonly class DependenciesLoader
 {
-    /** @var LoadableDependency[] */ private readonly array $dependencies;
+    /** @var LoadableDependency[] */ private array $dependencies;
 
     private function __construct(RParam ...$rParams)
     {

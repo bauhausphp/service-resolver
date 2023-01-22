@@ -9,10 +9,10 @@ use Bauhaus\ServiceResolverSettings;
 /**
  * @internal
  */
-final class ProvidedServiceContainer implements Locator
+final readonly class ProvidedServiceContainer implements Locator
 {
     private function __construct(
-        /** @var ProvidedService[] */ private readonly array $services,
+        /** @var ProvidedService[] */ private array $services,
     ) {
     }
 

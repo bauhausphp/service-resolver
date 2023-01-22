@@ -1,24 +1,23 @@
 <?php
 
-namespace Bauhaus;
+namespace Bauhaus\ServiceResolver;
 
 use Bauhaus\ServiceResolver\CircularDependencyDetector\CircularDependencyDetector;
 use Bauhaus\ServiceResolver\Container\ProvidedServiceContainer;
-use Bauhaus\ServiceResolver\Definition;
-use Bauhaus\ServiceResolver\DefinitionLoadingError;
-use Bauhaus\ServiceResolver\DefinitionNotFound;
 use Bauhaus\ServiceResolver\Discoverer\Discoverer;
-use Bauhaus\ServiceResolver\Identifier;
-use Bauhaus\ServiceResolver\Locator;
 use Bauhaus\ServiceResolver\MemoryCache\MemoryCache;
 use Bauhaus\ServiceResolver\SelfPsrContainerLocator\SelfPsrContainerDetector;
+use Bauhaus\ServiceResolverSettings;
 use Psr\Container\ContainerInterface as PsrContainer;
 use Throwable;
 
-final class ServiceResolver implements PsrContainer
+/**
+ * @internal
+ */
+final readonly class ServiceResolver implements PsrContainer
 {
     private function __construct(
-        private readonly Locator $locator,
+        private Locator $locator,
     ) {
     }
 

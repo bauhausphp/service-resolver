@@ -7,10 +7,10 @@ use InvalidArgumentException;
 /**
  * @internal
  */
-final class DefinitionFile
+final readonly class DefinitionFile
 {
     public function __construct(
-        private readonly string $path
+        private string $path
     ) {
         $this->assertFileExist();
     }

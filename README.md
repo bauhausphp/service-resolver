@@ -31,10 +31,9 @@ $ composer require bauhaus/service-resolver
 ```php
 <?php
 
-use Bauhaus\ServiceResolver;
 use Bauhaus\ServiceResolverSettings;
 
-$settings = ServiceResolverSettings::new()
+$psrContainer = ServiceResolverSettings::new()
     ->withDefintionFiles(
         'path/file-1.php',
         'path/file-2.php',
@@ -46,11 +45,10 @@ $settings = ServiceResolverSettings::new()
     ->withDiscoverableNamespaces(
         'App\\Namespace1',
         'App\\Namespace2',
-    );
+    )
+    ->build();
 
-$serviceResolver = ServiceResolver::build($settings);
-
-$serviceResolver->has($serviceId);
-$serviceResolver->get($serviceId);
+$psrContainer->has($serviceId);
+$psrContainer->get($serviceId);
 ```
 
